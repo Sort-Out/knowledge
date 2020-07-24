@@ -38,8 +38,8 @@ CREATE table if not exists stock_info(id char(6), c_name varchar(63), mt_code va
 /* "A"、"B"、"C": 车型配置 */
 CREATE table if not exists car_cf(id char(8), coop_car_type enum("L10", "A16", "B11C"), mt_code varchar(12), mt_name varchar(150), "A", "B", "C")
 /*standing_book: 台账*/
-/*bil_code: 发票号、bil_start_date: 发票日期、pay_content: 发票内容、bil_amount: 发票金额、bil_deal_way: 发票处理方式、pay_done_amount: 发票已付金额、pay_undone_amount: 发票待付金额、*/
-CREATE table if not exists standing_book(id char(6), bil_code char(8), bil_start_date datetime, pay_content varchar(60), bil_amoount int(1), 
+/*main_subject_for_pay: 付款主体、supplier: 供应商、bil_code: 发票号、bil_start_date: 发票日期、pay_content: 发票内容、bil_amount: 发票金额、bil_deal_way: 发票处理方式、pay_done_amount: 发票已付金额、pay_undone_amount: 发票待付金额、*/
+CREATE table if not exists standing_book(id char(6), main_subject_for_pay enum("母公司", "子公司"), supplier varchar(500), bil_code char(8), bil_start_date datetime, pay_content varchar(60), bil_amoount int(1), 
                                          bil_deal_way enum("pay", "hang up", "wash out"), pay_done_amount int(1), pay_undone_amount int(1), remake varchar(100));
 /*s_score_manage: 供应商评分管理*/
 /*score_rank: 评分等级, alternate_exists: 是否存在替选*/
@@ -50,4 +50,9 @@ CREATE table if not exists s_score_manage(id char(6), socre_rank enum("normal", 
 CREATE table if not exists s_dvpt(id char(6), c_name varchar(63), cont_for_dvpt varchar(500), dvpt_progress varchar(500), participant varchar(500));
 /*design_change: 设变信息表*/
 /*cont_for_design: 设变内容、design_progress: 设变进度、participant: 参与人员*/
-CREATE table if not exists design_change(id char(6), c_name varchar(63), cont_for_design varchar(500),  design_progress varchar(500), participant varchar(500));							 
+CREATE table if not exists design_change(id char(6), c_name varchar(63), cont_for_design varchar(500),  design_progress varchar(500), participant varchar(500));		
+/*--------------------------budget_for_produce --------------------------*/
+/*process_for_oa: OA流程进度、type_of_payment: 付款方式、amount_for_goods: 到货数量、time_for_good：到活时间*/
+create table if not exists budget_for_produce(id char(6), coop_car_type enum("L10", "A16", "B11C"), process_for_oa enum("归档", "财务审批", "采购员"),  pay_content varchar(60),
+                                              main_subject_for_pay enum("母公司", "子公司")，supplier_be_paid varchar(500), bil_amoount int(1), payer varchar(12), time_to_pay datetime, 
+											  bil_amount_to_pay int(1), type_of_payment enum("现汇"), amount_for_goods int(1), time_for_good datetime);
