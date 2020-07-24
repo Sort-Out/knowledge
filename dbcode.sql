@@ -21,6 +21,7 @@ values(1,N'苹果',1,1000),(1,N'苹果',2,2000),(1,N'苹果',3,4000),(1,N'苹果
 CREATE DATABASE IF NOT exists SCM_7_21 default character set utf8 collate utf8_general_ci;
 USE SCM_7_21;
 /*create table*/
+/*--------------------------related to supplier--------------------------*/
 /*s_info: 供应商信息表*/
 /*id: 供应商编码、 c_name: 公司名称、 p_phonenum: 负责人联系电话、 e_addr: 邮件地址、 c_addr: 公司地址*/
 CREATE table if not exists s_info(id char(6), c_name varchar(63), p_phonenmu char(11), e_addr varchar(50), c_addr varchar(50));
@@ -43,6 +44,10 @@ CREATE table if not exists standing_book(id char(6), bil_code char(8), bil_start
 /*s_score_manage: 供应商评分管理*/
 /*score_rank: 评分等级, alternate_exists: 是否存在替选*/
 CREATE table if not exists s_score_manage(id char(6), socre_rank enum("normal", "bad", "good"), alternate_exists enum("yes", "no"), remake varchar(100));
-
-
-,										 
+/*--------------------------related to improvement--------------------------*/
+/*s_dvpt: 供应商开发表*/
+/*cont_for_dvpt: 开发内容、dvpt_progress: 开发进度、participant: 参与人员*/
+CREATE table if not exists s_dvpt(id char(6), c_name varchar(63), cont_for_dvpt varchar(500), dvpt_progress varchar(500), participant varchar(500));
+/*design_change: 设变信息表*/
+/*cont_for_design: 设变内容、design_progress: 设变进度、participant: 参与人员*/
+CREATE table if not exists design_change(id char(6), c_name varchar(63), cont_for_design varchar(500),  design_progress varchar(500), participant varchar(500));							 
