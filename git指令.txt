@@ -1,0 +1,51 @@
+撤销
+1、撤销修改/删除的工作区内容
+   git checkout <file>
+2、撤销add到暂存区
+   git reset head file
+3、撤销commit到分支
+   git reset --hard head^
+4、撤销删除文件/文件夹
+   git reset head [被误删文件]
+   git checkout <file>
+   
+回溯
+1、回溯上一个版本
+   git reset --hard head^
+2、回溯到特定版本
+   git reset --hard 版本id
+   
+查看
+1、查看提交历史
+   git log
+2、查看命令历史
+   git reflog
+   
+删除
+1、删除已经提交的无用文件[没有提交到版本库]
+   git rm file
+   git commit -m "..."
+ 
+github使用
+1、添加远程连接
+   git remote add origin git@github.com:xxccodesave/2020_07_10.git
+2、修改连接远程github仓库
+   git remote set-url origin git@github.com:xxccodesave/2020_07_10.git
+3、推送
+   git push -u origin master [第一次]
+   git push origin master [本地远程建立连接后]
+   作用：把本地内容推送到远程，并将本地master分支和远程master分支关联起来
+4、拉取
+   git clone git@github.com:xxccodesave/2020_07_10.git
+   
+分支使用
+1、分支创建
+   git checkout -b dev 
+2、分支切换
+   git checout master/git checkout dev 
+3、分支内容合并
+   git merge dev 
+4、分支删除
+   git branch -d dev 
+5、分支查看[当前使用分支]
+   git branch
