@@ -22,6 +22,7 @@ USE SCM_7_21;
 */
 /*--------------------------related to supplier--------------------------*/
 /*----------------主表----------------*/
+/*coop_*/
 /*supplier_info: 供应商信息表*/
 /*id: 供应商编码、c_name: 公司名称、moduler: 模块、 coop_car_type：合作车型、p_in_charge: 联系人、p_phonenum: 负责人联系电话、 e_addr: 邮件地址、 c_addr: 公司地址*/
 CREATE table if not exists supplier_info(id varchar(7), c_name varchar(63), moduler enum("冲压件", "底盘", "动总", "车身", "内外饰", "电器", "大宗物料"),
@@ -35,7 +36,7 @@ CREATE table if not exists vehicle_configuration(id varchar(7), c_name varchar(6
 /*standing_book: 台账*/
 /*main_subject_for_pay: 付款主体、invoice_num: 发票号、invoice_date: 发票日期、invoice_content: 发票内容、invoice_amoount: 发票金额、invoice_deal_way: 发票处理方式、invoice_done_amount: 发票已付金额、invoice_undone_amount: 发票待付金额、*/
 CREATE table if not exists standing_book(id varchar(7), c_name varchar(63), main_subject_for_pay enum("母公司", "子公司"), 
-                                         invoice_num char(8) primary key, invoice_date datetime, invoice_content varchar(60), 
+                                         invoice_num char(8) primary key, invoice_date date, invoice_content varchar(60), 
 										 invoice_amoount int(1), invoice_deal_way enum("pay", "hang up", "wash out"), invoice_done_amount int(1), 
 										 invoice_undone_amount int(1),  remake varchar(100),
 										 constraint fk_standing_book foreign key(id, c_name) references supplier_info(id, c_name));								  
@@ -50,7 +51,7 @@ CREATE table if not exists supplier_ct_info(id varchar(7), c_name varchar(63), c
 /*stock_info: 库存信息表*/
 /*id: 供应商编码、c_name：公司名称、mt_code: 物料编码、mt_name: 物料名称、stock_pos: 仓储位置、incoming_quantity: 入库数量、incoming_time: 入库时间、stock_num: 库存数量*/
 CREATE table if not exists stock_info(id varchar(7), c_name varchar(63), mt_code varchar(12), mt_name varchar(150),  
-									  stock_pos varchar(7), incoming_quantity mediumint(1), incoming_time datetime, stock_num mediumint(1),
+									  stock_pos varchar(7), incoming_quantity mediumint(1), incoming_time date, stock_num mediumint(1),
 									  constraint fk_stock_info_2 foreign key(mt_code, mt_name) references vehicle_configuration(mt_code, mt_name), 
 									  constraint fk_stock_info foreign key(id, c_name) references                                                                                                                                                                                                                               supplier_info(id, c_name));
 /*supplier_score: 供应商评分管理*/
@@ -76,6 +77,6 @@ CREATE table if not exists design_change(id varchar(7), c_name varchar(63), cont
 create table if not exists budget_for_produce(id varchar(7), c_name varchar(63), coop_car_type varchar(20), 
                                               processupplier_for_oa enum("归档", "财务审批", "采购员"),  pay_content varchar(60), 
 											  main_subject_for_pay enum("母公司", "子公司"), bil_amoount int(1), payer varchar(12), 
-											  time_to_pay datetime, bil_amount_to_pay int(1), type_of_payment enum("现汇"), 
-											  amount_for_goods int(1), time_for_good_incoming datetime,
+											  time_to_pay date, bil_amount_to_pay int(1), type_of_payment enum("现汇"), 
+											  amount_for_goods int(1), time_for_good_incoming date,
 											  constraint fk_budget_for_produce foreign key(id, c_name) references supplier_info(id, c_name));
