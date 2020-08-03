@@ -6,8 +6,10 @@
   ct_mb: 合同主体
   mt_code: 物料编码
 */
+/*边*/
 CREATE DATABASE IF NOT exists SCM_7_21 default character set utf8 collate utf8_general_ci;
 USE SCM_7_21;
+
 /*create table*/
 /*
   逻辑：
@@ -28,18 +30,18 @@ CREATE table if not exists supplier_id_contrast(supplier_id varchar(7) primary k
 
 /*supplier_moduler_constrast: 供应商模块对照表*/
 /*supplier_id: 供应商编码、moduler: 模块*/
-CREATE table if not exists supplier_moduler_contrast(supplier_id varchar(7) unique, moduler enum("冲压件", "底盘", "动总", "车身", "内外饰", "电器", "大宗物料"),
-                                                     foreign key(supplier_id) references supplier_id_contrast(supplier_id) on delete cascade on update cascade);
+CREATE table if not exists supplier_moduler_contrast(supplier_id varchar(7) unique, moduler ,
+                                                     foreign key(supplier_id) references supplier_id_contrast(supplier_id));
 
 /*cooperation_info：供应商合作信息*/
 /*supplier_id: 供应商编码、coop_car_type: 合作车型*/
-CREATE table if not exists cooperation_info(supplier_id varchar(7), coop_car_type enum("L10", "A16", "B11C", "L10/A16", "L10/B11C", "A16/B11C", "L10/A16/B11C"), 
-                                            foreign key(supplier_id) references supplier_id_contrast(supplier_id) on delete cascade on update cascade);
+CREATE table if not exists cooperation_info(supplier_id varchar(7) unique, coop_car_type enum("L10", "A16", "B11C", "L10/A16", "L10/B11C", "A16/B11C", "L10/A16/B11C"), 
+                                            foreign key(supplier_id) references supplier_id_contrast(supplier_id));
 
 /*supplier_info: 供应商基础信息表*/
 /*c_name: 供应商名称、scope_of_business: 经营范围、p_phonenum: 负责人联系电话、e_addr: 邮件地址、c_addr：地址*/
 CREATE table if not exists supplier_info(supplier_id varchar(7) unique, scope_of_business varchar(100), p_phonenum varchar(100), e_addr varchar(100), c_addr varchar(100)
-                                         foreign key(supplier_id) references supplier_id_contrast(supplier_id) on delete cascade on update cascade);
+                                         foreign key(supplier_id) references supplier_id_contrast(supplier_id));
 /*----------------车型配置表----------------*/
 /*物料编码对照表*/
 /*mt_code: 物料编码、mt_name: 物料名称*/
