@@ -1,5 +1,27 @@
-全局变量
-1、定义/修改
-set @var = "1";
-2、查看
-select @var;
+** 3、对于要查询平均成绩，一定要group by
+
+1、左连接-右连接-内连接
+   # books 书籍归属表、articles 文章内容表
+   A、内连接 [取交集]
+      select * from books a inner join articles b on a.title = b.title;
+   B、左连接 [读取左边数据表的全部数据，即使右边数据表没有对应数据]
+      select a.id, a.title, a.created_at, b.content from books a left join articles b on a.title = b.title;
+   C、右连接 [读取右边数据表的全部数据，即使左边数据表没有对应数据]
+      select a.id, a.title, a.created_at, b.content from books a right join articles b on a.title = b.title; 
+
+
+2、union/union all
+   union操作：两个以上表数据按照一定查询条件查询之后，需要将结果并到一起显示出来
+   union和union all区别：union all是把结果集直接合并在一起，而union是将union all后的结果再做一次去重 
+   使用：select * from aa union select * from bb;
+         select uid, name from (select uid, name from aa union select uid, name from bb)t order by uid desc limit 10;
+	     或
+	     (select uid, name from aa) union (select uid, name from bb) order by uid desc limit 10;
+
+
+
+
+
+
+
+
