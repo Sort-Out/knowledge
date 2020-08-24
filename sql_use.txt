@@ -17,9 +17,27 @@
          select uid, name from (select uid, name from aa union select uid, name from bb)t order by uid desc limit 10;
 	     或
 	     (select uid, name from aa) union (select uid, name from bb) order by uid desc limit 10;
+3、group by ：按照某一字段或多个字段进行分组[分组条件：必须是都有的共同点]
+   having : 对分组后数据进行筛选
+   count: 要么获得总表对应条件个数，要么统计group by 之后每组的个数
+   
+经典：
+# 41、查询不同课程成绩相同的学生的学生编号、课程编号、学生成绩
+select c_id, s_score from score group by c_id, s_score having count(*) >1;
+分析：一门课程、成绩相同，必须分组[以课程、成绩作为分组依据]，后面再用count统计每组有几条记录，就可以得到一门课程成绩相同的个数
 
 
-
+# 41、查询不同课程成绩相同的学生的学生编号、课程编号、学生成绩
+select s_id, c_id, s_score from score where s_score in  (select s_score from score group by s_score having count(*) > 1);
+# 42、查询不同课程成绩相同的学生的学生编号、课程编号、学生成绩
+select m.s_id, m.s_name, n.cid, n.sc from student m
+join 
+(select a.s_id as 'sid', a.c_id as 'cid', t.s_score as 'sc' from score a
+join
+(select c_id, s_score from score group by c_id, s_score having count(*) >1) t
+on a.c_id = t.c_id and a.s_score = t.s_score)n
+on m.s_id = n.sid;
+分析：题目--“不同课程成绩相同” 与 “各个课程存在成绩相同”
 
 
 

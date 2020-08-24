@@ -83,15 +83,92 @@ use test_8_21;
 -- select distinct c.t_name, a.c_name, round(avg(b.s_score), 2) from course a, score b, teacher c
 -- where a.c_id = b.c_id and c.t_id = a.t_id group by c.t_name order by round(avg(b.s_score), 2) desc;  
 # 22、查询所有课程的成绩第2名到第3名的学生信息及该课程成绩
-
-
-
-
-
-
-
-
-
-
+-- (select c.c_id, a.c_name, b.s_name, c.s_score from course a, student b, score c where c.c_id='01' 
+-- and c.c_id = a.c_id and c.s_id = b.s_id order by c.s_score desc limit 1, 2 )
+-- union 
+-- (select c.c_id, a.c_name, b.s_name, c.s_score from course a, student b, score c where c.c_id='02' 
+-- and c.c_id = a.c_id and c.s_id = b.s_id order by c.s_score desc limit 1, 2 )
+-- union 
+-- (select c.c_id, a.c_name, b.s_name, c.s_score from course a, student b, score c where c.c_id='03' 
+-- and c.c_id = a.c_id and c.s_id = b.s_id order by c.s_score desc limit 1, 2 )
+# 23、统计各科成绩各分数段人数：课程编号,课程名称,[100-85],[85-70],[70-60],[0-60]及所占百分比
+-- select a.c_id, a.c_name, 
+-- 	round(100 * sum(case when b.s_score <=100 and b.s_score > 85 then 1 else 0 end)/sum(case when b.s_score then 1 else 0 end), 2) as '[100-85]',
+--     round(100 * sum(case when b.s_score <= 85 and b.s_score > 70 then 1 else 0 end)/sum(case when b.s_score then 1 else 0 end), 2) as '[85-70]',
+--     round(100 * sum(case when b.s_score <= 70 and b.s_score > 60 then 1 else 0 end)/sum(case when b.s_score then 1 else 0 end), 2) as '[70-60]',
+--     round(100 * sum(case when b.s_score <= 60 and b.s_score > 0 then 1 else 0 end)/sum(case when b.s_score then 1 else 0 end), 2) as '[0-60]'
+--     from course a, score b where a.c_id = b.c_id group by c_id;
+# 24、查询学生平均成绩及其名次
+-- select a.s_name, round(avg(b.s_score), 2) as '平均成绩' from student a, score b 
+-- where a.s_id = b.s_id group by a.s_name order by b.s_score desc; 
+# 25、查询各科成绩前三名的记录
+#     1.选出b表比a表成绩大的所有组
+#     2.选出比当前id成绩大的 小于三个的
+# 26、查询每门课程被选修的学生数 
+-- select a.c_id, a.c_name, count(b.s_id) from course a, score b where a.c_id = b.c_id group by a.c_id;
+# 27、查询出只有两门课程的全部学生的学号和姓名
+-- select a.s_id as '学号',  b.s_name as '姓名' from score a, student b
+-- where a.s_id = b.s_id group by b.s_name having count(*) = 2;
+# 28、查询男生、女生人数
+-- select s_sex, count(s_sex) from student group by s_sex;
+# 29、查询名字中含有"风"字的学生信息
+-- select * from student  where s_name like '%风%'
+# 30、查询同名同性学生名单，并统计同名人数
+# 31、查询1990年出生的学生名单
+-- select * from student where left(s_birth, 4) = '1990';
+# 32、查询每门课程的平均成绩，结果按平均成绩降序排列，平均成绩相同时，按课程编号升序排列
+-- select a.c_name as '课程名', round(avg(b.s_score), 2) as '平均成绩' from course a, score b
+-- where a.c_id = b.c_id group by a.c_id order by round(avg(b.s_score), 2) desc, b.c_id asc; 
+# 33、查询平均成绩大于等于85的所有学生的学号、姓名和平均成绩
+-- select a.s_id, a.s_name, round(avg(b.s_score),2) from student a, score b 
+-- where a.s_id = b.s_id group by a.s_name having round(avg(b.s_score),2) >= 85;
+# 34、查询课程名称为"数学"，且分数低于60的学生姓名和分数
+-- select a.s_name, b.s_score as '数学成绩' from student a, score b
+-- where a.s_id = b.s_id and b.c_id = (select c_id from course where c_name = '数学'
+-- ) group by a.s_name having b.s_score < 60;
+# 35、查询所有学生的课程及分数情况
+-- select a.s_name, 
+--    sum(case when c.c_name = '语文' then b.s_score else 0 end) as '语文成绩',
+--    sum(case when c.c_name = '数学' then b.s_score else 0 end) as '数学成绩',
+--    sum(case when c.c_name = '英语' then b.s_score else 0 end) as '英语成绩',
+--    sum(b.s_score) as '总分'
+--    from student a, score b, course c where a.s_id = b.s_id and c.c_id = b.c_id group by a.s_id;
+# 36、查询任何一门课程成绩在70分以上的姓名、课程名称和分数； 
+-- select a.s_name, b.c_name, c.s_score from student a, course b, score c
+-- where a.s_id = c.s_id and b.c_id = c.c_id and a.s_id not in 
+-- (select s_id from score where s_score < 70 );
+# 37、查询不及格的课程
+-- select a.s_id, b.c_name, a.s_score from score a, course b
+-- where a.c_id = b.c_id and a.s_score < 60;
+# 38、查询课程编号为01且课程成绩在80分以上的学生的学号和姓名；
+-- select a.s_id, a.s_name, b.s_score from student a, score b
+-- where a.s_id = b.s_id and b.c_id = '01' and b.s_score > 80;
+#　39、求每门课程的学生人数
+-- select c_id, count(s_id) from score group by c_id;
+# 40、查询选修"张三"老师所授课程的学生中，成绩最高的学生信息及其成绩
+-- select t.c_id , m.s_id, n.s_name from 
+-- (select a.c_id, max(a.s_score) as 'max_score' from score a where a.c_id in 
+-- (select b.c_id from course b, teacher c where b.t_id = c.t_id and c.t_name = '张三') 
+-- group by a.c_id) t, score m, student n where m.c_id = t.c_id and m.s_score = t.max_score and n.s_id = m.s_id;  
+# 41、查询每个课程存在成绩相同的学生的学生编号、课程编号、学生成绩
+-- select m.s_id, m.s_name, n.cid, n.sc from student m
+-- join 
+-- (select a.s_id as 'sid', a.c_id as 'cid', t.s_score as 'sc' from score a
+-- join
+-- (select c_id, s_score from score group by c_id, s_score having count(*) >1) t
+-- on a.c_id = t.c_id and a.s_score = t.s_score)n
+-- on m.s_id = n.sid;
+# 41.2、查询不同课程成绩相同的学生的学生编号、课程编号、学生成绩
+# 第一种解法: 子查询
+-- select s_id, c_id, s_score from score where s_score in 
+-- (select s_score from score group by s_score having count(*) > 1);
+# 第二种解法：多表去重查询
+-- select DISTINCT b.s_id,b.c_id,b.s_score from score a,score b
+-- where a.c_id != b.c_id and a.s_score = b.s_score
+# 42、查询每门成绩最好的前两名
+-- 目的：找到需要的s_id、c_id
+-- 一、  在score根据cid和s_score排序
+-- 目的: 截取一统计出来的数据
+-- 二、  循环根据c_id去依次截取【并合并】
 
 
