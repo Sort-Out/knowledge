@@ -4,6 +4,12 @@ use test_8_21;
 -- join score b on a.s_id = b.s_id	and b.c_id = "01"
 -- left join score c on a.s_id = c.s_id and c.c_id = '02'
 -- where b.s_score > c.s_score;
+# 2、查询"01"课程比"02"课程成绩低的学生的信息及课程分数
+-- select a.*, t.cid_01, t.cid_02 from student a 
+-- join
+-- (select distinct a.s_id as 'sid', a.s_score as 'cid_01', b.s_score as 'cid_02' from score a, score b 
+-- where a.s_id = b.s_id and a.c_id = '01' and b.c_id = '02' and a.s_score < b.s_score) t
+-- on  a.s_id = t.sid;
 # 3、查询平均成绩大于等于60分的同学的学生编号和学生姓名和平均成绩
 -- select a.s_id, a.s_name, round(avg(b.s_score), 2) as avg_score from student a
 -- join score b on a.s_id = b.s_id group by a.s_id, a.s_name having round(avg(b.s_score), 2)>=60;
@@ -165,10 +171,24 @@ use test_8_21;
 # 第二种解法：多表去重查询
 -- select DISTINCT b.s_id,b.c_id,b.s_score from score a,score b
 -- where a.c_id != b.c_id and a.s_score = b.s_score
-# 42、查询每门成绩最好的前两名
--- 目的：找到需要的s_id、c_id
--- 一、  在score根据cid和s_score排序
--- 目的: 截取一统计出来的数据
--- 二、  循环根据c_id去依次截取【并合并】
-
-
+# 42、查询每门成绩最好的前两名 
+-- select a.s_id, a.c_id, a.s_score from score a where
+-- (select count(1) from score b where a.c_id = b.c_id and b.s_score >= a.s_score) <= 2 order by a.c_id ;
+# 43、统计每门课程的学生选修人数（超过5人的课程才统计）。
+# 要求输出课程号和选修人数，查询结果按人数降序排列，若人数相同，按课程号升序排列
+-- select c_id, count(s_id) from score group by c_id having count(s_id) = 5
+-- order by count(s_id) desc, c_id asc;
+# 44、检索至少选修两门课程的学生学号
+-- select s_id from score group by s_id having count(c_id) >=2;
+# 45、查询选修了全部课程的学生信息
+-- select * from student where s_id in 
+-- (select s_id from score group by s_id having count(c_id) = (select count(*) from course));
+# 46、查询各学生的年龄按照出生日期来算，当前月日 < 出生年月的月日则，年龄减一
+# 47、查询本周过生日的学生
+-- select s_id from student where week(s_birth) = week(now());
+# 48、查询下周过生日的学生
+-- select s_id from student where week(s_birth) - 1 = week(now());
+# 49、查询本月过生日的学
+-- select s_id from student where month(s_birth) = month(now());
+# 50、查询下月过生日的学生
+-- select s_id from student where month(s_birth) - 1 = month(now());
