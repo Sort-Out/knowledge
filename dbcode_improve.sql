@@ -1,3 +1,4 @@
+/* sql增删改查经典练习题 https://blog.csdn.net/qq_41936662/article/details/80393172 */
 /*create database*/
 /*
   SCM: 供应链管理
@@ -119,7 +120,6 @@ create table if not exists budget_for_produce(supplier_id varchar(7), invoice_nu
 									  
                               									  
 							
-
 
 
 

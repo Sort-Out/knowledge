@@ -8,8 +8,6 @@
       select a.id, a.title, a.created_at, b.content from books a left join articles b on a.title = b.title;
    C、右连接 [读取右边数据表的全部数据，即使左边数据表没有对应数据]
       select a.id, a.title, a.created_at, b.content from books a right join articles b on a.title = b.title; 
-
-
 2、union/union all
    union操作：两个以上表数据按照一定查询条件查询之后，需要将结果并到一起显示出来
    union和union all区别：union all是把结果集直接合并在一起，而union是将union all后的结果再做一次去重 
@@ -20,16 +18,94 @@
 3、group by ：按照某一字段或多个字段进行分组[分组条件：必须是都有的共同点]
    having : 对分组后数据进行筛选
    count: 要么获得总表对应条件个数，要么统计group by 之后每组的个数
-   
-经典：
+-------------------------------数据类型-------------------------------   
+mysql支持多种数据类型，大致可以分为三类：数值、日期/时间、字符串(字符)类型
+
+# 整型[默认为signed]  如果为unsigned, 例：tinyint unsigned取值范围(0~256)
+tinyint    1字节   范围(-128~127) [-2^7 ~ 2^7-1]
+smallint  2字节   范围(-32768~32767) [-2^15 ~ 2^15-1]
+mediumint 3字节   范围(-8388608~8388607)  [百万]
+int       4字节   范围(-2147483648~2147483647) [百万以上]
+bigint    8字节   范围(+....)
+补充：tinyint(1)和tinyint(4)中的1和4并不表示存储长度，只有字段指定zerofill是有用
+      如tinyint(4)，如果实际值是2，列指定了zerofill, 查询结果就是0002, 左边用0来填充
+
+# 浮点型
+关于精度：数据的精确度取决于分配给每种数据类型的存储长度
+分析精度：数据存储过程，会将数据转换成float长度等对应长度的二进制形式，
+          并不是所有实数都能转成32位或64位，如果超过了，就会出现截断，造成查询误差
+数据存储：1、数据准确且能在有限的存储空间里完全存储起来
+          2、数据被截断，要么碰巧可以显示准确，要么显示不准确
+float  (m, d) 浮点型 4字节    m个总数，d个小数位(7个有效位, 不包含小数点 eg: 15223.22)
+double (m, d) 双精度 8字节    m个总数，d个小数位(15个有效位)
+
+# 定点型
+decimal以字符串形式保存
+decimal(m, d) 字符串 m+2字节  m个总数，d个小数位(28个有效位)
+
+# 字符串型
+在mysql 5以上版本, char(M)标识存储M个字符
+char(m)  用于存储定长字符串
+varchar(m) 用于存储可变长字符串，需要使用1或2个额外字节记录字符串的长度
+           一个varchar(10)需要11个字节的存储空间
+varchar优缺点： 
+               优点 1、节省空间[varchar只使用必要的空间]
+			   缺点 1、行是变长的，在update时可能使行变得比原来更长，就需要做额外的工作
+varchar适用情况：
+                1、字符串列的最大长度比平均长度大很多
+				2、列的更新很少，所以碎片不是问题
+				3、每个字符都使用不同的字节数进行存储
+
+# 日期格式
+date  3字节  yyyy-mm-dd 
+time  3字节  hh:mm:ss
+year  1字节  yyyy
+datetime 8字节 yyyy-mm-dd hh:mm:ss 
+timestamp 4字节 yyyy-mm-dd hh:mm:ss 
+-------------------------------日期处理-------------------------------
+# 获取当前时间  2008-08-08 22:20:46
+# select now();
+# 把时间转换成指定格式的字符串 
+# select date_format('2008-08-08 22:23:01', '%Y%m%d%H%i%s');
+# 把字符串转换成日期
+# select str_to_date('08/09/2008', '%m/%d/%Y'); 
+# 把时间转换成秒、秒转换成时间
+# select time_to_sec('01:00:05'); 
+# select sec_to_time(3605); 
+# 把数字拼凑时间函数
+# select maketime(12,15,30);
+# 获得时间戳函数
+# select unix_timestamp();
+# select unix_timestamp('2008-08-08 12:30:00');
+# 把时间戳转换成日期
+# select from_unixtime(1218124800);
+
+# 返回给定日期属于哪个周数
+week()、yearweek()
+1、week('1990-01-28')  # 返回1~52之间的整数
+2、yearweek('1990-01-28') # 199004
+# 返回给定日期属于哪个月份
+month(date/datetime)  # 返回1~12之间的整数    
+-------------------------------alter用法-------------------------------
+# 删除、增加、修改列、重命名
+alter table 表名 drop   列名
+alter table 表名 add    列名 int not null comment '注释说明'
+alter table 表名 change 原列名 新列名 int not null
+alter table 表名 rename 新表名
+alter table 表名 drop primary key
+alter table 表名 add constraint 约束名 primary key(resid, resfromid)
+alter table 表名 add index 索引名(列名)
+alter table 表名 add index unique 索引名(列名)
+alter table 表名 drop index 索引名
+-------------------------------经典题目-------------------------------
 # 41、查询不同课程成绩相同的学生的学生编号、课程编号、学生成绩
 select c_id, s_score from score group by c_id, s_score having count(*) >1;
 分析：一门课程、成绩相同，必须分组[以课程、成绩作为分组依据]，后面再用count统计每组有几条记录，就可以得到一门课程成绩相同的个数
 
 
-# 41、查询不同课程成绩相同的学生的学生编号、课程编号、学生成绩
-select s_id, c_id, s_score from score where s_score in  (select s_score from score group by s_score having count(*) > 1);
 # 42、查询不同课程成绩相同的学生的学生编号、课程编号、学生成绩
+select s_id, c_id, s_score from score where s_score in  (select s_score from score group by s_score having count(*) > 1);
+# 43、查询不同课程成绩相同的学生的学生编号、课程编号、学生成绩
 select m.s_id, m.s_name, n.cid, n.sc from student m
 join 
 (select a.s_id as 'sid', a.c_id as 'cid', t.s_score as 'sc' from score a
@@ -39,7 +115,7 @@ on a.c_id = t.c_id and a.s_score = t.s_score)n
 on m.s_id = n.sid;
 分析：题目--“不同课程成绩相同” 与 “各个课程存在成绩相同”
 
-
-
-
-
+# 44、查询每门成绩最好的前两名 
+select a.s_id, a.c_id, a.s_score from score a where
+(select count(1) from score b where a.c_id = b.c_id and b.s_score >= a.s_score) <= 2 order by a.c_id ;
+分析：记住就好
