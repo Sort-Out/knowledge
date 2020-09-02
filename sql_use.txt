@@ -97,6 +97,15 @@ alter table 表名 add constraint 约束名 primary key(resid, resfromid)
 alter table 表名 add index 索引名(列名)
 alter table 表名 add index unique 索引名(列名)
 alter table 表名 drop index 索引名
+-------------------------------事务操作-------------------------------
+commit、commit work 
+mysql> set 	@@completion_type = 1  
+当设置completion_type为0[默认0], commit work 与 commit效果一样，提交后不执行任何其他操作
+当设置completion_type为1， commit work相当于commit and chain，表示马上开启一个相同隔离级别的事务
+当设置completion_type为2， commit work相当于commit and release，表示事务提交后马上断开服务器连接
+
+rollback to savepoint t1
+注意：rollback 可以回滚操作到某个保存点t1, 但是事务并没有结束，需要显示的commit完成提交
 -------------------------------经典题目-------------------------------
 # 41、查询不同课程成绩相同的学生的学生编号、课程编号、学生成绩
 select c_id, s_score from score group by c_id, s_score having count(*) >1;

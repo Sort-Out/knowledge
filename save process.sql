@@ -26,6 +26,10 @@
              			   
 */
 
+
+
+
+
 /*存储过程创建in 输入参数、inout 输入输出参数*/
 /* in 输入参数 */
 create procedure demo_in_parameter(in p_in int)
@@ -81,3 +85,6 @@ delimiter ;
 		
 /*存储过程删除  drop procedure 存储过程1*/
 /*存储过程查看  show procedure status where db="数据库名"*/
+
+
+

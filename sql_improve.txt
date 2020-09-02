@@ -1,0 +1,37 @@
+1、存储过程
+create procedure load2(count int unsigned)
+BEGIN
+   declare s int unsigned default 1;
+   while s <= count do
+   insert into fruit(id) values(s);
+   set s = s + 1;
+   commit;
+   end while;
+END
+
+create procedure load2(count int unsigned)
+BEGIN
+   declare s int unsigned default 1;
+   while s <= count do
+   insert into fruit(id) values(s);
+   set s = s + 1;
+   end while;
+END
+--------[优化]--------
+create procedure load2(count int unsigned)
+BEGIN
+   declare s int unsigned default 1;
+   start transaction;
+   while s <= count do
+   insert into fruit(id) values(s);
+   set s = s + 1;
+   end while;
+   commit;
+END
+注解：
+     第三种优点：速度快、安全[要么全部完成、要么全部不完成]
+     原因：
+         第三种使用事务，仅提交一次。因为inoodb默认自动提交，第一种第二种写不写commit没什么区别，每循环一次，就提交一次。
+         因为每次提交，都会想磁盘写一次重做文件，所以第三种速度性能明显高于前两种，
+      
+      
