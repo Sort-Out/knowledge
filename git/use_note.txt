@@ -53,4 +53,5 @@ github使用
 其他
 1、添加所有修改
    git add .
- 
+2、修改github仓库名，提交方法
+   git add->git commit->git push
