@@ -1,16 +1,37 @@
 2020-10-27
 1、8:40 --9:10  info get [done]
+2、9:10 --10:30 eshop [done]
+3、10:30--11:25 code exe [done]
+4、lunch time [done]
+5、info get [done]
+6、useful info copy [undone]
+7、free time [done]
+8、14:00--15:00 code exe [undone]
+9、15:00--15:30 lanuage exe [undone]
+10、15:30--17:00 eshop [undone]
+11、get off work [done]
+12、18:00--18:30 ps exe [done]
+13、dinner time [done]
+14、19:00--20:30 ps exe [done]
+15、20:30--23:30 LOL [done]
+16、sleep time [done]
+
+todo: 整理计算机硬件[智能]控制学习路线
+
+2020-10-28
+1、8:40 --9:10  info get [done]
 2、9:10 --10:30 eshop 
-3、10:30--11:25 code exe
-4、lunch time 
+3、10:30--11:25 code exe 
+4、lunch time
 5、info get 
-6、free time 
-7、14:00--15:00 code exe
-8、15:00--15:30 lanuage exe
-9、15:30--17:00 eshop
-10、get off work
-11、18:00--18:30 ps exe 
-12、dinner time 
-13、19:00--20:30 ps exe 
-14、20:30--23:30 LOL
-15、sleep time 
+6、useful info copy 
+7、free time 
+8、14:00--15:00 code exe
+9、15:00--15:30 lanuage exe 
+10、15:30--17:00 eshop 
+11、get off work 
+12、18:00--18:30 ps exe 
+13、dinner time 
+14、19:00--20:30 ps exe 
+15、20:30--23:30 LOL 
+16、sleep time 
