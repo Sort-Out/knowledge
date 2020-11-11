@@ -191,7 +191,26 @@ vc6.0++使用
 	  4、用函数处理数组
 	     int x[2]={1,2}; void change(int x[]){...}; change(x); //change(int x[])中的int x[]相当于int *x, 在函数中对x进行数值修改，原数组值会同步改变
       5、多维数组
-	     【todo】
+	     int a[10][10]; 
+         a //二维数组开始地址
+         a+1 //即a[1][0]地址
+         a[0]+1 //即&a[0][1]
+         *(a+1)+1//即a[1][1],鉴于*(a+i)=a[i]
+         *(a[i]+j)//即a[i][j]的值
+         使用：
+			1、使用int (*p)[n] 处理二维数组	
+		       int a[3][4] = {1,2,3,4,5,6,7,8,9,0}; int (*p)[4]; p=a; printf("%d\n", *(*(p+2)+3));//输出p[2][3]的值
+               理解：int (*p)[4]中，p的类型为int (*)[4], 长度为16, p=a,相当于p指向一个长度为16的4个元素的一维数组。后续使用*(*(p+i)+j)取得数组元素		  
+			2、使用int *p处理二维数组
+			   int a[3][4] = {1,2,3,4,5,6,7,8,9,0}; int *p,*p_end; p=*a; p_end=p+12-1l; for(; p<p_end;p++){printf("%d\t", *p)}; //输出二维数组所有值
+			   理解：p=*a相当于p=a[0][0],p逐加1,即可遍历a二维数组所有地址,然后用*p取得地址对应存储值
+	  6、指针数组
+	     1、定义
+		    一个数组，若其元素均为指针类型数据，称为指针数组. int*  p[4];
+		 2、使用 
+		    char *name[] = {"Follow me", "Basic"}; printf("%s", name[1]);//输出"Basic"值
+	  7、指向指针的指针
+	     char **p //可理解为char* (*p)
    4、处理字符串
       char *string = "nihao";
 	  printf("%s\n", string); //输出结果: nihao 将nihao字符串的第一个元素地址赋值给string]
@@ -201,8 +220,28 @@ vc6.0++使用
 	  2、指针变量作为形参
 	     int max(int x, int y){...}; int x=10, y=100; int choose(int x, int y, int(*p)(int, int)); choose(x, y, max);
 	  3、返回指针类型的函数
-         int* p(int x, int y);	  
-   6、补充
+         int* p(int x, int y);	 
+   6、void指针类型
+      理解：指向"空类型" 或 "不确定指向类型"的指针
+      int a = 3;
+      void *p = &a;	//空指针p得到a的纯地址，无法通过*p输出a的值
+   7、补充
       *p++ 等同于*(p++)
 	  ++(*p) 指针p指向变量值自增1，指针变量值不变[即值变，地址不变]
-继续学习: 指针引用多维数组[265]、返回指针值的函数[295]
+--------动态分配--------
+所属头文件: <stdlib.h>
+1、malloc函数
+   void *malloc(unsigned int size) //在内存的动态存储区中分配一个长度为size的连续空间
+   pt =(int *)malloc(100); //开辟100字节的临时分配域。函数值为其第一个字节的地址。[如果失败, 返回null]
+2、calloc函数
+   void *calloc(unsigned n, unsigned size) //在内存的动态存储区中分配n个长度为size的连续空间[如果失败, 返回null]
+   p = (int *)calloc(50, 4); //开辟50*4个字节的临时分配域，把起始地址赋给指针变量p
+3、free函数
+   void free(void *p) //释放指针变量p所指向的动态空间
+   free(p); //释放指针变量p所指向的已分配动态空间
+4、realloc函数      
+   void *realloc(void *p, unsigned int size) //修改malloc或calloc获得的动态空间大小[重新分配空间,如果失败返回null]
+   relloc(p, 50); //将p指向的已分配动态空间修改为50字节 
+
+
+继续学习: 指向指针的指针[300]、指针小节[309]
