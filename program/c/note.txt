@@ -247,11 +247,13 @@ vc6.0++使用
 		 理解：p是一个指向字符指针的指针变量. ar数组中每个元素均为指针变量.p=ar+0表示p指向a[0], printf("%d", *p)//打印a[0]地址.  printf("%s", *p)//输出"hi" 
 	  2、处理整型数组
 		 int a[5] = {1,2,3,4,5}; int *num[5] = {&a[0], &a[1], &a[2], &a[3], &a[4]}; int **p, i; for(i=0; i<5;i++){ p = num+i; printf("%d\n", **p);} //逐个输出a数组所有值		 
-   7、void指针类型
+   7、处理链表
+      struct Student{int num; float score; struct Student *next};
+   8、void指针类型
       理解：指向"空类型" 或 "不确定指向类型"的指针
       int a = 3;
       void *p = &a;	//空指针p得到a的纯地址，无法通过*p输出a的值
-   8、补充
+   9、补充
       *p++ 等同于*(p++)
 	  ++(*p) 指针p指向变量值自增1，指针变量值不变[即值变，地址不变]
 --------动态分配--------
@@ -268,3 +270,5 @@ vc6.0++使用
 4、realloc函数      
    void *realloc(void *p, unsigned int size) //修改malloc或calloc获得的动态空间大小[重新分配空间,如果失败返回null]
    relloc(p, 50); //将p指向的已分配动态空间修改为50字节 
+   
+ 继续学习 建立静态链表[330]
