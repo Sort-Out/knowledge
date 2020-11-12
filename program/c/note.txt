@@ -36,6 +36,24 @@ vc6.0++使用
 2、枚举类型[enum]-空类型[void]
 3、派生类型
    指针类型、数组类型、结构体类型、共用体类型、函数类型
+4、结构体类型
+   1、定义及赋值
+      struct Date{int month; int day; int year; char mark[20];}; struct Student{char name[20]; int age; struct Date birth;}; //定义 
+      struct Date birth,birth2 = {...}, {..} ; //全部赋值
+      birth.month = ..; //对Date结构类型变量birth下month赋值	
+      birth2 = birth; //同类的结构体可以互相赋值
+	  scanf("%d, %d, %d, %s", &birth.month, &birth.day, &birth.year, birth.mark); //只能逐个读入结构体变量
+   2、数组
+      struct Person{char name[20]; int count;}leader[3] = {{"LI", 0}, {"Zhang", 0}, {"Sun", 0}};
+   3、指针
+      1、结构体变量指针
+	     可用(*p).name, 也可用p->name 
+         # include <string.h>
+         struct Student{long num; char name[20]; char sex; float score;}stu_1, *p; p = &stu_1; stu_1.num = 1; strcpy(stu_1.name, "lilei");
+	     printf("%ld, %s", (*p).num, (*p).name); //用指针输出结构体变量stu_1的num及name值
+	  2、结构体数组指针
+	     struct Student{long num; char name[20]; char sex; float score;}stu_1[3], *p;
+		 for(p=stu; p<stu+3; p++){....p->num...p->name..};
 --------运算相关--------
 1、系统自动转换及强转换
       a = (int)b
@@ -92,6 +110,9 @@ vc6.0++使用
       scanf("%s", a);//3
      理解：需先让字符指针变量a指向一个特定地址，然后才能对其赋值
            可以修改字符数组中的每个值，但无法修改字符指针变量的值[即char *b="ss"; b[1]='n'不可行] 
+4、结构体变量赋值
+   struct Student{long num; char name[20]; char sex; float score;}stu_1;
+   无法使用stu_1.name = "lilei" 赋值。可通过<string.h>中strcpy(stu_1.name, "lilei")赋值    
 --------代码优化--------
 1、先赋值后判断
    while((*to++=*from++)!='\0'); //先赋值，后自增
@@ -115,7 +136,6 @@ vc6.0++使用
      作用：其他文件可以调用
 	 规定：在定义函数时，省略extern，则默认为外部函数
 	 extern int fun(int a, int b)
-	 
 --------变量相关--------
 1、程序块
    作用域：变量C作为程序块定义变量，只在程序块中有效 
@@ -248,6 +268,3 @@ vc6.0++使用
 4、realloc函数      
    void *realloc(void *p, unsigned int size) //修改malloc或calloc获得的动态空间大小[重新分配空间,如果失败返回null]
    relloc(p, 50); //将p指向的已分配动态空间修改为50字节 
-
-
-继续学习: 指向指针的指针[300]、指针小节[309]
