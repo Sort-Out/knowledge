@@ -37,6 +37,8 @@ vc6.0++使用
 3、派生类型
    指针类型、数组类型、结构体类型、共用体类型、函数类型
 4、结构体类型
+   结构体每个成员会占用不同的的内存，互相之间没有影响。
+   结构体占用的内存等于所有成员占用的内存的总和。
    1、定义及赋值
       struct Date{int month; int day; int year; char mark[20];}; struct Student{char name[20]; int age; struct Date birth;}; //定义 
       struct Date birth,birth2 = {...}, {..} ; //全部赋值
@@ -54,6 +56,24 @@ vc6.0++使用
 	  2、结构体数组指针
 	     struct Student{long num; char name[20]; char sex; float score;}stu_1[3], *p;
 		 for(p=stu; p<stu+3; p++){....p->num...p->name..};
+5、共用体类型
+   共用体占用的内存等于最长的成员占用的内存。采用内存覆盖技术，同一时刻只能保存一个成员的值，如果对新成员赋值，就会把原来的值覆盖掉。
+   1、定义及赋值
+      union Data{int i; char ch; float f}a,b,c; //或union Data a;
+      a.i = 97; //赋值[共用体只能对其中一个成员初始化, 
+	           //不能直接union Data{int i; char ch; float f}a = {1, 'a', 1/5};]
+			   //可直接b=a[同类型共用体]
+	  printf("%d", a.i); //结果为97
+	  printf("%c", a.ch); //结果为'a'
+	  printf("%f", a.f); //结果为0.0000
+   2、用法
+      增加程序灵活性
+	  union Categ{int class; char position[10];}；
+	  struct{int num; char name[10]; char sex; char job; union Categ category;}person[2];
+	  person中有一项要么是class, 要么是position, 可使用共用体增加灵活性.
+6、枚举类型
+   1、定义及赋值
+      enum{sun, mon, tue, wed, thu, fri, sat} workday, weekend;
 --------运算相关--------
 1、系统自动转换及强转换
       a = (int)b
@@ -113,6 +133,14 @@ vc6.0++使用
 4、结构体变量赋值
    struct Student{long num; char name[20]; char sex; float score;}stu_1;
    无法使用stu_1.name = "lilei" 赋值。可通过<string.h>中strcpy(stu_1.name, "lilei")赋值    
+5、NULL值
+   C只能写为NULL[大写]，小写即出错
+6、分号使用
+   #define LEN sizeof(struct Student) //不能加分号，否则会报异常missing ')' before ';'
+   struct Student{char name[20]; int age; struct Student *next;}; //要加分号
+7、SCANF使用
+   scanf("%d,%d",&a,&b);因为两个%d之间有一个逗号，所以在输入时两个整数之间只能用逗号分隔，如果用其它符号分隔就会出错（比如说此时用空格、回车分隔就会出错）
+   如果是scanf("%s, %d"...)//应改成scanf("%d,%s"...)
 --------代码优化--------
 1、先赋值后判断
    while((*to++=*from++)!='\0'); //先赋值，后自增
@@ -248,7 +276,26 @@ vc6.0++使用
 	  2、处理整型数组
 		 int a[5] = {1,2,3,4,5}; int *num[5] = {&a[0], &a[1], &a[2], &a[3], &a[4]}; int **p, i; for(i=0; i<5;i++){ p = num+i; printf("%d\n", **p);} //逐个输出a数组所有值		 
    7、处理链表
-      struct Student{int num; float score; struct Student *next};
+      结构体中包含next指针指向下一个结构体元素...
+      1、静态链表
+	     非动态临时分配链表
+	     struct Student a, b, *head, *p; strcpy(a.name, "lilei");
+	     a.age = 12; strcpy(b.name, "zhangsan"); b.age = 14;
+	     head = &a; p = head; a.next = &b; b.next = NULL;
+	     do{ printf("%s\t%d\n", p->name, p->age); p=p->next; }while(p!=NULL);
+	  2、动态链表
+	     程序在执行过程中从无到有建立链表[动态分配内存]
+		 struct Student *head, *p1, *p2;
+	     p1 = (struct Student *)malloc(LEN); 
+	     scanf("%d %s", &p1->age, p1->name);
+	     printf("第一次年龄: %d\t%s\n", p1->age, p1->name);
+	     head = p1; //头指针
+	     while(1){ p2 = p1; p1 = (struct Student *)malloc(LEN); scanf("%d %s", &p1->age, p1->name);
+		          if(p1->age == 0){ break;} 
+				  p2->next = p1;
+				  }
+	     p2->next = NULL; p1 = head;
+		 while(p1!=NULL){ printf("名字: %s, 年龄: %d\n", p1->name, p1->age); p1 = p1->next;}
    8、void指针类型
       理解：指向"空类型" 或 "不确定指向类型"的指针
       int a = 3;
