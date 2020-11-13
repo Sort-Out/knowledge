@@ -341,4 +341,4 @@ vc6.0++使用
    void *realloc(void *p, unsigned int size) //修改malloc或calloc获得的动态空间大小[重新分配空间,如果失败返回null]
    relloc(p, 50); //将p指向的已分配动态空间修改为50字节 
    
- 继续学习 枚举类型[343]
+ 继续学习 文件相关内容[351]
