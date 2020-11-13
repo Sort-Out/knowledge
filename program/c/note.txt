@@ -73,7 +73,30 @@ vc6.0++使用
 	  person中有一项要么是class, 要么是position, 可使用共用体增加灵活性.
 6、枚举类型
    1、定义及赋值
-      enum{sun, mon, tue, wed, thu, fri, sat} workday, weekend;
+      enum Day{sun, mon, tue, wed, thu, fri, sat} workday, weekend; 
+	  enum Day i,j,k;
+	  printf("%d\t %d\t %d\t %d\t %d\t %d\t %d\n",sun, mon, tue, wed, thu, fri, sat); //结果为：0 1 2 3 4 5 6
+	  enum Day{sun=8, mon, tue, wde, thu, fri, sat}; //显示指定sun的值
+	  printf("%d\t %d\t %d\t %d\t %d\t %d\t %d\n",sun, mon, tue, wed, thu, fri, sat); //结果为：8 9 10 11 12 13 14
+7、typedef声明类型
+   1、用法
+      1、代表基本类型
+         typedef int Integer;
+	     Integer i, j;  
+      2、代表结构体
+         typedef struct{int month, int day;}Date; 
+         Date birth; 	 
+	  3、代表数组类型
+	     typedef int Num[100]; 
+		 Num a; //定义a为整型数组名，它有100个元素
+		 #include <stdio.h> #include <string.h> #include <typeinfo>  
+         int main(){typedef int Num[10]; Num i; printf(typeid(i).name()); //输出int *[i为int* 指针变量，后续可通过i[m]赋值及访问i指向地址存储内容]
+		 int m;
+         for(m=0; m<10; m++){ i[m] = m;}
+	     for(m=0; m<10; m++){printf("%d ",i[m]);} 
+	  4、代表指向函数的指针
+	     typedef int (*Pointer)();
+	便于移植：对于不同计算机占用字节不同，涉及到需将int 改为long.此时只需利用typedef int Integer[将int修改为long即可]
 --------运算相关--------
 1、系统自动转换及强转换
       a = (int)b
@@ -318,4 +341,4 @@ vc6.0++使用
    void *realloc(void *p, unsigned int size) //修改malloc或calloc获得的动态空间大小[重新分配空间,如果失败返回null]
    relloc(p, 50); //将p指向的已分配动态空间修改为50字节 
    
- 继续学习 建立静态链表[330]
+ 继续学习 枚举类型[343]
