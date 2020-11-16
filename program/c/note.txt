@@ -107,6 +107,12 @@ vc6.0++使用
 2、复合运算
    a+=3
    x*=y+8 //相当于x = x*(y+8)
+3、逻辑运算符
+   &&  ||  !
+   1、a&&b&&c
+      只有a为真时，才需要执行b操作及判别b的值[同理ab相对于c]
+4、条件运算符
+   a ? b: c //a为真，则执行b，否则执行c
 --------常用算法逻辑--------
 1、闰年
    "能被4整除，但不能被100整除" 或者 "能被400整除"
@@ -232,10 +238,39 @@ vc6.0++使用
 		 file B.c
 		 extern A;
          int power(int a){return a*a;}
+--------循环选择结构--------
+3、选择结构
+   1、选择嵌套
+	   if()
+		   if() 语句1
+		   else 语句1
+	   else
+		   if() 语句2
+		   else 语句2
+	2、switch分支
+	   switch(grade)
+	   {
+	      case 'a': printf("ok");break; //第一种
+		  case 'b':                          
+		  case 'c': printf("not bad");break; //第二种
+		  case 'd': printf("start get bad");break;
+		  default: printf("bad");
+	   }
+4、循环结构
+   continue： 提前结束本次循环[本次循环continue下方的语句不执行]
+   break: 跳出循环
 --------数组--------
-1、使用
-   char string[] = "nihao";
-   printf("%s\n", string); //输出结果：nihao 
+1、初始化
+	int a[5] = {0, 1, 2, 3, 4}; //逐个赋值，如果赋值少于元素个数。则系统自动给后面元素赋初值0
+	int a[10] = {0}； //全部元素赋值0
+	int a[] = {1, 2, 3, 4, 5}; //使用不指定长数组
+2、多维数组
+	int a[2][3] = {{1, 2, 3, 4}, {5, 6, 7}, {8, 9, 10, 11}};
+3、字符数组
+	char a[10] = {'i', '', 'a', 'm'}; //建议写成 char a[10] = "i am happy";
+4、输出
+	char string[] = "nihao";
+	printf("%s\n", string); //输出结果：nihao 
 --------指针--------
 术语：一个变量的地址称为该变量的"指针"。
       指针是一个地址(i的指针是2000)，指针变量是存放地址的变量
@@ -340,5 +375,53 @@ vc6.0++使用
 4、realloc函数      
    void *realloc(void *p, unsigned int size) //修改malloc或calloc获得的动态空间大小[重新分配空间,如果失败返回null]
    relloc(p, 50); //将p指向的已分配动态空间修改为50字节 
-   
- 继续学习 文件相关内容[351]
+--------文件相关--------
+1、文件缓冲区
+   定义：系统自动在内存区为每一个正在使用的文件开辟一个文件缓冲区。从内存向磁盘输出程序必须先送到内存中的缓冲区，
+   装满缓冲区后再一起送到磁盘去。如果从磁盘向计算机读入数据，则一次从磁盘文件将一批数据输入到文件缓冲区，然后从
+   缓冲区逐个将数据送到程序数据区。
+2、标准输入流-标准输出流-标准出错输出流
+   标准输入流 -- stdin
+   标准输出流 -- stdout
+   标准出错输出流 -- stderr
+3、文件函数
+   FILE *fp = fopen("C:\\Users\\Administrator\\Desktop\\file.txt", "r"); //文件读取[读取失败时返回NULL]
+   fclose(fp) // 文件关闭[数据从缓冲区充满后输出给文件[关闭失败时返回-1]
+              //需关闭文件再结束程序运行(fclose关闭文件会先把缓冲区数据输出到文件),
+           	  //否则缓冲区数据会丢失]
+   1、文件方式:
+	   "r"、"w", "a", [只读、只写、只追加]
+	   "rb", "wb", "ab", [二进制版本(只读、只写、只追加)]
+	   "r+", "w+", "a+", [可读可写]
+	   "rb+", "wb+", "ab+"[二进制版本(可读可写)]
+	   无论用那种w, 如果文件不存在会自动新建文件。
+	   无论用哪种r, a, 如果文件不存在会报错。
+   2、其他函数:
+	   1、fgetc(fp) //读入一个字符[成功即返回所读字符，失败返回-1]
+	   2、fputc(ch, fp) //将字符ch写到fp指向的文件[成功即返回所读字符，失败返回-1]
+	   3、feof(fp) //判断fp是否移到文件末尾[失败返回0]
+	   4、fgets(str, n, fp) //读取一个长度为n-1的字符串，存放在字符数组str中[失败返回NULL]
+	   5、fputs(str, fp)  //把str所指向的字符串写到fp指向的文件中[成功即返回0，失败返回非0值]
+	   6、fprinf(fp, "%s, %f", i,j) //将字符串型变量i, 浮点型变量j输入到文件fp中
+	   7、fread(f, 4, 10, fp) //从fp指向的文件中，读取10个4字节[按数据块长度处理，不涉及字符转换]
+	   8、fwrite(f, 4, 10, fp) //将f地址的数据，写入10个4字节到fp指向的文件中[按数据块长度处理，不涉及字符转换]
+	   9、rewind(fp) //	使文件位置标记返回文件头[无返回值]
+	   10、fseek(fp, 100L, 0) //将文件指针fp从开头移后面100个字节处
+	       fseek(fp, 50L, 1) //将文件指针fp从当前指向位置移至后面50个字节处
+		   fseek(fp, -10L, 2) //将文件指针fp从文件末尾位置后退10个字节
+	   11、ftell(fp) //测定文件位置标记的当前位置[失败返回-1L]
+	   12、ferror(fp)及clearerr(fp)
+	   使用示例：
+	   1、读
+			char ch; FILE *fp = fopen("C:\\Users\\Administrator\\Desktop\\file.txt", "r");
+			if(fp != NULL){ 
+				while(!feof(fp)){ //feof: 判断是否遇到输入文件的结束标志
+					ch = fgetc(fp); printf("%c\n", ch); //逐个读取打印字符
+				}
+				fclose(fp);
+			}else{ printf("not ok"); exit(0);}
+	   2、写
+			FILE *fp = fopen("C:\\Users\\Administrator\\Desktop\\file.txt", "w");
+			if(fp != NULL){fputs("you good", fp); fputc('\n', fp); fputs("you fucking good", fp);
+				fclose(fp);
+			}else{ printf("not ok");exit(0); }
