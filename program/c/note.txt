@@ -168,8 +168,9 @@ vc6.0++使用
    #define LEN sizeof(struct Student) //不能加分号，否则会报异常missing ')' before ';'
    struct Student{char name[20]; int age; struct Student *next;}; //要加分号
 7、SCANF使用
-   scanf("%d,%d",&a,&b);因为两个%d之间有一个逗号，所以在输入时两个整数之间只能用逗号分隔，如果用其它符号分隔就会出错（比如说此时用空格、回车分隔就会出错）
+   1、scanf("%d,%d",&a,&b);因为两个%d之间有一个逗号，所以在输入时两个整数之间只能用逗号分隔，如果用其它符号分隔就会出错（比如说此时用空格、回车分隔就会出错）
    如果是scanf("%s, %d"...)//应改成scanf("%d,%s"...)
+   2、对于char b[10]; scanf("%s", b); 或者scanf("%c", &b[0]); 对于int a[10]; 只能写为scanf("%d", &a[0]);
 --------代码优化--------
 1、先赋值后判断
    while((*to++=*from++)!='\0'); //先赋值，后自增
