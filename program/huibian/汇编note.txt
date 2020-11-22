@@ -145,6 +145,45 @@
      mov cx, 11
    s:add ax, ax
      loop s
+9、"字型数据定义-存储"及"段地址的定义-引用"
+   1、在程序中定义字型数据
+     [dw: 开辟内存空间用于字型数据定义及存放]
+	  assume cs:code 
+	  code segment 
+		   dw 0123h, 0464h [dw写在程序开头，则0123h, 0464h存储位置分别为cs:ip~cs:ip+2、cs:ip+3~cs:ip+4]
+            mov bx, 0
+			...
+            int 21h
+      code ends
+      end  
+	  
+   2、由于9.1在程序开头写了dw, 需要声明程序指令开始位置[声明后,ip会指向此偏移地址]
+      assume cs:code 
+	  code segment 
+	       dw 0123h, 0464h
+           start: mov bx, 0 [声明start后，程序第一条指令从mov bx, 0此处开始执行]
+                  ...
+                 int 21h
+      code ends
+      end 
+	 如果不指明入口，CPU会把这些数值数据当成汇编指令执行
+   3、段地址定义与引用
+      assume cs:code, ds:data, ss:stack [关联]
+	  data segment  [数据段]
+	       dw 0123h, 0456h, 0789h...
+	  data ends
+	  stack segment [栈段]
+	       dw 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+	  stack ends  
+	  code segment  [代码段] 
+	       start: mov ax, stack
+                  mov ss, ax
+                  mov sp, 20h                  
+				  ...
+		          mov bx, data 
+	  其中 mov ax, stack[将stack段地址赋值给ax]
+           mov bx, data [将data段地址赋值给bx]	
+      补充：如果段中的数据占N个字节，则程序加载后，该段实际占有空间为N%16==0 ? N: (N/16+1)*16		   
 --------常见错误--------
 1、通用寄存器
   1、计算
@@ -175,5 +214,36 @@
      notepadd下表示：将0赋值给ax[或者在notepadd下直接mov ax, ds:[0]] 
 4、安全空间
    一般而言，dos方式下，0:200~0:2ff空间中，不会存在系统或其他程序的代码[最好还是-d查看这段区间是否数据全为0]
+5、sp设置
+   1、使用dw
+      1、如果程序只有一个段，那么sp要考虑所有dw
+	    eg:
+		   code segment
+                dw 0123h, 0456h, 0789h, 0abch, 0defh, 0fedh, 0eddh, 0fedh
+                dw 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+				start: mov ax, cs
+					   mov ss, ax
+					   mov sp, 30h [两次dw，一共划分了2*(8+16)=48个字节，也就是0030H。
+					                实际栈范围为(0010H~002fH, 因为栈空，所以sp初始指向下一个字节单元，即0030H)]
+	  2、如果程序数据、栈、代码各自划分一个段，那么sp只需要考虑栈段的大小，并相应设置
+	  	  eg:
+	     a segment
+           dw 1,2,3,4,5,6,7,8,9,0ah,0bh,0ch,0dh,0eh,0fh,0ffh
+         a ends
+         b segment
+           dw 0,0,0,0,0,0,0,0
+         b ends
+         code segment
+              start: 
+			   mov ax, a [076c]
+			   mov ds, ax
+			   
+			   mov ax, b [076e]
+			   mov es, ax
+			   
+			   mov ax, 1000H
+			   mov ss, ax
+			   mov sp, 0010H [因为栈段dw初始设置为8个字单元 (8*2)=16个字节,为001H。
+			                  实际栈范围为(0000H~000fH, 因为栈空，所以sp初始指向下一个字节单元，即001H)]
 ********继续学习********
-P99 LOOP指令
+P138 
