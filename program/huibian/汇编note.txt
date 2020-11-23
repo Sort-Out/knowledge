@@ -130,6 +130,9 @@
       mov ax, 2000
 	  mov ss, ax
 	  mov sp, 10     [将2000:0000~2000:000F为栈空间，初始化栈顶]
+   2、bp
+      如果没有显示指定段寄存器，则[bp]默认段寄存器为ss
+	  mov ax, [bp] [(ax) = ((ss)*16+(bp))]
 7、符号约定使用
    1、[BX]类型
 	  当ds为1000H, bx为0003H
@@ -153,7 +156,51 @@
 		  补充：[bx+si]也可以写为[bx][si]  
        3、[bx+si+idata]
 	      [bx+si+idata]表示一个内存单元[地址为: ds:[(bx)+(si)+idata]]
-	      补充：[bx+si+idata]也可以写为200[bx][si]或idata.[bx][si]
+	      补充：[bx+si+idata]也可以写为idata[bx][si]或idata.[bx][si]
+   5、byte ptr/word ptr
+      mov word ptr ds:[0], 1  [指定cpu访问的ds:0为字单元]
+	  mov byte ptr ds:[0], 1  [指定cpu访问的ds:0为字节单元]
+   6、div除法
+      1、除数为8位
+	     则被除数为16位
+		 eg: 100001/100
+		     mov dx, 1
+		     mov ax, 86a1H
+			 mov bx, 100
+			 div bx 
+	  2、除数为16位
+	     则被除数为32位
+		 eg:1001/100
+		    mov ax, 03e9H
+			mov bl, 100
+			div bl
+	  商余规则：如果被除数为8位，则AL存储商、AH存储余数
+	            如果被除数为16位，则AX存储商，DX存储余数
+   7、dd[double dw]
+	  dd定义双字单元[即两个dw]
+	  例子: 将data段的dd作为被除数，第一个dw作为除数，结果的商放在第二个dw中
+	  assume cs:code
+	  data segment
+		   dd 100001
+	   	   dw 100
+		   dw 0
+	  data ends
+	  code segment 
+		   start: mov ax, data
+		     	  mov ds, ax 
+				 
+				  mov ax, ds:[0]
+				  mov dx, ds:[2]
+				  div word ptr ds:[4]
+				  mov ds:[6], ax
+				
+				  mov ax, 4c00h
+				  int 21h
+	  code ends
+	  end start 
+  8、dup 
+     dup与dd、dw、db等配合使用，用于重复定义开辟内存
+	 eg： db 200 dup(0) 相当于 db 0,0,0,0 [一个两百个0]
 8、循环[loop]
    原理:cpu执行loop指令时[遇到loop s时]，先执行(cx)=(cx)-1, 然后判断cx的值[如果cx不为0则转移至标号处执行程序，如果cx为0则程序向下执行]
      mov ax, 2
