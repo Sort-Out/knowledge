@@ -86,7 +86,8 @@
            ["字/字型数据一个字单元/"由2、3两个内存单元组成，则这个字单元起始地址为2，称为2地址字单元]
 1、通用寄存器
    作用：存储一般性数据[AX、BX、CX、DX]，其中每个寄存器可分为两个独立的8位寄存器使用(高8，低8)
-        [AX分为AH和AL, BX可分为BH和BL, CX可分为CH和CL, DX可分为DH和DL]
+        [AX分为AH和AL, BX可分为BH和BL, CX可分为CH和CL, DX可分为DH和DL
+		 还有di, si(2字节寄存器，但不可分)]
 2、常见指令
    1、mov ax, 18 [相当于ax = 18]
    2、add ax, 7  [相当于ax = ax + 7]
@@ -139,15 +140,46 @@
    3、inc
       mov bx, 1
 	  inc bx  [执行后,bx=2]
+   4、偏移地址表示
+      1、[bx+idata]
+		 [bx+idata]表示一个内存单元[地址为: ds:[(bx)+idata]]
+		  eg: mov bx, 0001H
+			  mov ax, 0008H
+			  mov ds:[4], ax
+			  mov ax, [bx+3] [ax值为0008h, 因为[bx+3]指向ds:[4]地址]
+		  补充：[bx+3]也可以写为3[bx]
+	   2、[bx+si]
+		  [bx+si]表示一个内存单元[地址为: ds:[(bx)+(si)]]  
+		  补充：[bx+si]也可以写为[bx][si]  
+       3、[bx+si+idata]
+	      [bx+si+idata]表示一个内存单元[地址为: ds:[(bx)+(si)+idata]]
+	      补充：[bx+si+idata]也可以写为200[bx][si]或idata.[bx][si]
 8、循环[loop]
-   原理:cpu执行loop指令时，先执行(cx)=(cx)-1, 然后判断cx的值[如果cx不为0则转移至标号处执行程序，如果cx为0则程序向下执行]
+   原理:cpu执行loop指令时[遇到loop s时]，先执行(cx)=(cx)-1, 然后判断cx的值[如果cx不为0则转移至标号处执行程序，如果cx为0则程序向下执行]
      mov ax, 2
      mov cx, 11
    s:add ax, ax
      loop s
+   应用：双重循环
+             mov bx, 0 
+			 mov cx, 4
+		   s:
+		     push cx 
+		     mov cx, 4   
+			 mov si, 0
+			 x:
+			   mov al, [bx+2+si] 
+			   and al ,11011111b
+			   mov [bx+2+si], al
+			   inc si
+			   loop x
+			 add bx, 13
+			 pop cx
+			 loop s
 9、"字型数据定义-存储"及"段地址的定义-引用"
    1、在程序中定义字型数据
-     [dw: 开辟内存空间用于字型数据定义及存放]
+     [dw: 开辟内存空间用于字型数据（2个字节）定义及存放]
+	 [db: 开辟内存空间用于字节数据（1个字节）定义及存放]
 	  assume cs:code 
 	  code segment 
 		   dw 0123h, 0464h [dw写在程序开头，则0123h, 0464h存储位置分别为cs:ip~cs:ip+2、cs:ip+3~cs:ip+4]
@@ -184,6 +216,16 @@
 	  其中 mov ax, stack[将stack段地址赋值给ax]
            mov bx, data [将data段地址赋值给bx]	
       补充：如果段中的数据占N个字节，则程序加载后，该段实际占有空间为N%16==0 ? N: (N/16+1)*16		   
+10、一些计算指令
+   1、按位运算
+      and al, 00000001B [按位"与运算"]
+	  or al, 00000001B [按位"或运算"]
+	  可处理问题：
+	           1、使用位运算进行加减法
+			      and al, 11011111B [小写改大写]、or al, 00100000B [大写改小写] 
+11、ascii相关
+   1、mov al, 'a' [相当于mov al, 61H(根据ascii码进行计算)]
+   2、db 'unix' [相当于db 75h, 6eh, 49h, 58h(根据'u', 'n', 'i', 'x'对应ascii码进行计算)] 
 --------常见错误--------
 1、通用寄存器
   1、计算
@@ -245,5 +287,7 @@
 			   mov ss, ax
 			   mov sp, 0010H [因为栈段dw初始设置为8个字单元 (8*2)=16个字节,为001H。
 			                  实际栈范围为(0000H~000fH, 因为栈空，所以sp初始指向下一个字节单元，即001H)]
+6、位运算
+   如果是一个字节位运算, 那就只能用al, 不能用ax或ds:[0]
 ********继续学习********
 P138 
