@@ -203,8 +203,13 @@
      dup与dd、dw、db等配合使用，用于重复定义开辟内存
 	 eg： db 200 dup(0) 相当于 db 0,0,0,0 [一个两百个0]
   9、标号偏移地址计算-转移
+     对于Jmp, short, 转移依据标号相对地址[补码]
+     eg: 基于cs:ip运行规则
+	     [当cs:ip指向某一指令a时: 1、cpu读取a入指令缓冲器，2、ip+2或3(a..指令占2个字节或3个字节), 3、执行指令缓冲器的a指令]
+         [当cs:ip指向jmp s时(jmp对应偏移地址为0008H), 在运行jmp指令前, ip指向000a. 如果标号s对应偏移地址为000b, 那么jmp 偏移地址为1,
+		                                                                           如果标号s对应偏移地址为0001, 那么相对地址为-9(-9补码为F6)，执行-9跳转]		 
 	 1、标号偏移地址计算[offset]
-		定义：取得标号距离"程序第一条执行指令"[即程序加载时的cs:ip指向]的偏移地址
+		定义：取得标号对应偏移地址[及标号对应ip值]
 		assume cs:codesg 
 		codesg segment
 			 start: mov ax, offset start [因为start是执行语句的开始，所以offset start 为0]
@@ -215,6 +220,7 @@
                jmp short, s [jmp short, s计算跳转偏移地址，ip值变，执行s:inc ax(不再执行add ax,1)]
                add ax, 1
              s:inc ax 
+        方式: 段不变，通过改变偏移地址实现跳转[段内跳转]
 	 3、[远距离跳转..]
 	    start: mov ax, 0
 		       mov bx, 0
@@ -222,13 +228,21 @@
 			   db 256 dup (0)
 			 s:add ax, 1
 			   inc ax
+		方式：段和偏移地址都有改变[段间跳转]
 	 4、转移地址在寄存器中
-	    jmp ax[指定16位reg]
+	    jmp ax[指定16位reg] 
 	 5、转移地址在内存单元中
-	    mov ax, 0123H
-		mov ds:[0], ax
-		jmp word ptr ds:[0] ; 执行完后ip=0123H
-        			 
+	    1、段内跳转
+		   mov ax, 0123H
+		   mov ds:[0], ax
+		   jmp word ptr ds:[0] ; 执行完后ip=0123H
+        2、段间跳转		 
+           mov ax, 0123H
+		   mov ds:[0], ax
+		   mov word ptr ds:[2], 0
+		   jmp dword ptr ds:[0]  ; ds:[2]为转移段地址(即cs)、ds:[0]为转移偏移地址(即ip)
+	 6、有条件转移
+		jcxz 标号 ; 相当于 if ((cx)==0) jmp short 标号, 如果cx!=0, 那么什么也不做，直接往下执行
 8、循环[loop]
    原理:cpu执行loop指令时[遇到loop s时]，先执行(cx)=(cx)-1, 然后判断cx的值[如果cx不为0则转移至标号处执行程序，如果cx为0则程序向下执行]
      mov ax, 2
@@ -364,5 +378,6 @@
 			                  实际栈范围为(0000H~000fH, 因为栈空，所以sp初始指向下一个字节单元，即001H)]
 6、位运算
    如果是一个字节位运算, 那就只能用al, 不能用ax或ds:[0]
+
 ********继续学习********
-P182
+P200
