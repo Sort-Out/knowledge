@@ -202,6 +202,33 @@
   8、dup 
      dup与dd、dw、db等配合使用，用于重复定义开辟内存
 	 eg： db 200 dup(0) 相当于 db 0,0,0,0 [一个两百个0]
+  9、标号偏移地址计算-转移
+	 1、标号偏移地址计算[offset]
+		定义：取得标号距离"程序第一条执行指令"[即程序加载时的cs:ip指向]的偏移地址
+		assume cs:codesg 
+		codesg segment
+			 start: mov ax, offset start [因为start是执行语句的开始，所以offset start 为0]
+			     s: mov ax, offset s     [因为s是执行完start: mov ax, offset start[3字节]后的语句,所以offset s为3 ]
+	 2、[短距离跳转,上127字节，下128字节]
+        start: mov ax, 0
+               mov bx, 0
+               jmp short, s [jmp short, s计算跳转偏移地址，ip值变，执行s:inc ax(不再执行add ax,1)]
+               add ax, 1
+             s:inc ax 
+	 3、[远距离跳转..]
+	    start: mov ax, 0
+		       mov bx, 0
+			   jmp far ptr s
+			   db 256 dup (0)
+			 s:add ax, 1
+			   inc ax
+	 4、转移地址在寄存器中
+	    jmp ax[指定16位reg]
+	 5、转移地址在内存单元中
+	    mov ax, 0123H
+		mov ds:[0], ax
+		jmp word ptr ds:[0] ; 执行完后ip=0123H
+        			 
 8、循环[loop]
    原理:cpu执行loop指令时[遇到loop s时]，先执行(cx)=(cx)-1, 然后判断cx的值[如果cx不为0则转移至标号处执行程序，如果cx为0则程序向下执行]
      mov ax, 2
@@ -338,4 +365,4 @@
 6、位运算
    如果是一个字节位运算, 那就只能用al, 不能用ax或ds:[0]
 ********继续学习********
-P138 
+P182
