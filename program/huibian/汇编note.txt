@@ -217,9 +217,10 @@
 	 2、[短距离跳转,上127字节，下128字节]
         start: mov ax, 0
                mov bx, 0
-               jmp short, s [jmp short, s计算跳转偏移地址，ip值变，执行s:inc ax(不再执行add ax,1)]
+               jmp short s [jmp short s计算跳转偏移地址，ip值变，执行s:inc ax(不再执行add ax,1)]
                add ax, 1
              s:inc ax 
+		jmp short s为8位位移进行跳转，jmp near ptr s 为16位位移进行跳转
         方式: 段不变，通过改变偏移地址实现跳转[段内跳转]
 	 3、[远距离跳转..]
 	    start: mov ax, 0
@@ -243,6 +244,12 @@
 		   jmp dword ptr ds:[0]  ; ds:[2]为转移段地址(即cs)、ds:[0]为转移偏移地址(即ip)
 	 6、有条件转移
 		jcxz 标号 ; 相当于 if ((cx)==0) jmp short 标号, 如果cx!=0, 那么什么也不做，直接往下执行
+     7、ret及retf
+	    ret: 修改ip的内容，相当于pop ip [段内转移] 
+		retf: 修改cs和ip的内容，相当于pop ip, pop cs[段间转移]
+	 8、call标号
+	    call s 相当于push ip, jmp near ptr s[段内]
+	    
 8、循环[loop]
    原理:cpu执行loop指令时[遇到loop s时]，先执行(cx)=(cx)-1, 然后判断cx的值[如果cx不为0则转移至标号处执行程序，如果cx为0则程序向下执行]
      mov ax, 2
@@ -305,14 +312,22 @@
 	  其中 mov ax, stack[将stack段地址赋值给ax]
            mov bx, data [将data段地址赋值给bx]	
       补充：如果段中的数据占N个字节，则程序加载后，该段实际占有空间为N%16==0 ? N: (N/16+1)*16		   
-10、一些计算指令
+10、特定内存地址
+   1、显卡地址操作
+      位于B8000H~BFFFFH[共32Kb, 分为8页，每页4kb
+	  [每页分为25*80(25行,每行有80个字符(2字节))
+	  每个字符的低位存放字符的ascii值，高位存储字符属性(背景色,请景色,闪烁,高亮等)
+	  eg:
+          -e B800:0000 41 02 [显示黑底绿色的'A']	  
+     
+11、一些计算指令
    1、按位运算
       and al, 00000001B [按位"与运算"]
 	  or al, 00000001B [按位"或运算"]
 	  可处理问题：
 	           1、使用位运算进行加减法
 			      and al, 11011111B [小写改大写]、or al, 00100000B [大写改小写] 
-11、ascii相关
+12、ascii相关
    1、mov al, 'a' [相当于mov al, 61H(根据ascii码进行计算)]
    2、db 'unix' [相当于db 75h, 6eh, 49h, 58h(根据'u', 'n', 'i', 'x'对应ascii码进行计算)] 
 --------常见错误--------
