@@ -247,9 +247,21 @@
      7、ret及retf
 	    ret: 修改ip的内容，相当于pop ip [段内转移] 
 		retf: 修改cs和ip的内容，相当于pop ip, pop cs[段间转移]
-	 8、call标号
-	    call s 相当于push ip, jmp near ptr s[段内]
-	    
+	 8、call 标号
+	    call s [相当于push ip, jmp near ptr s[段内]]
+	    call far ptr s [相当于push cs, push ip, jmp far ptr s]
+     9、call 16位reg
+	    call bx [相当于push ip, jmp (bx)]
+	 10、call word ptr 内存地址
+	     转移地址在内存地址中
+	     call word ptr ds:[0] [相当于push ip, jmp word ptr ds:[0]] 
+	 11、call dword ptr 内存地址
+	     相当于push cs, push ip, jmp dword ptr 内存单元地址
+		 mov sp, 10h
+		 mov ax, 0123h
+		 mov ds:[0], ax
+		 mov word ptr ds:[2], 0
+		 call dword ptr ds:[0]  ; (cs)=0, (ip)=123H, (sp)=0CH
 8、循环[loop]
    原理:cpu执行loop指令时[遇到loop s时]，先执行(cx)=(cx)-1, 然后判断cx的值[如果cx不为0则转移至标号处执行程序，如果cx为0则程序向下执行]
      mov ax, 2
