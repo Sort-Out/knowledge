@@ -469,7 +469,8 @@
          rep movsb[相当于s: movsb loop s]	
    4、iret
       作用：从栈中分别取出ip, cs, psw标志寄存器[通常和硬件制动完成的中断过程配合使用]
-      iret相当于: pop ip, pop cs, popf 	  
+      iret相当于: pop ip, pop cs, popf 	
+      [iret与int配合使用：如果使用额外[除int 21]中断, 并且执行中断程序后需要继续往下执行, 则需要在中断程序中iret释放cs ip psw, 让程序继续正常运行]	  
 13、一些计算指令
    1、按位运算
       and al, 00000001B [按位"与运算"]
@@ -505,9 +506,28 @@
      1、编写中断程序
 	 2、将中断程序放置在0000:0200[中断向量表空闲内存]
 	 3、找到中断码对应的中断向量表内存，修改表项[即表项存的cs:ip值]值指向0000:0200
+	 [自定义中断程序, 需要使用iret返回(除非你在中断程序中完成所有，不再需要从中断返回继续执行)]
   6、特殊情况
      cpu监测中断[一旦出现中断，转而执行中断程序],但是在一些特殊情况,即使发生中断，cpu也会继续往下执行，
 	 而不会转而执行中断程序[如: 单步调试下执行完ss赋值后,cpu不会中断进行单步调试状态, 而是会自动执行后面的sp赋值]
+  7、int中断
+     自定义安装int中断，然后在代码中直接显示调用中断[注意使用iret返回cs ip psw]
+     eg: 
+        mov ax, 0
+        int 6c		
+  8、测试定义的中断程序
+     eg: div 溢出中断[over_div.exe], 生成除法溢出程序[go.exe]
+	     在dosbox下:
+		           1、输入over_div.exe [执行自定义的div溢出中断程序]
+				   2、输入go.exe [执行生成除法溢出的程序]
+  9、bios中断例程
+     bios：基本输入输出系统[包含中断例程，可供程序员调用]
+	 eg: 操作光标 int 10h...
+  10、dos中断例程
+     1、int 21h
+	    mov ah, 4ch ;程序返回
+		mov al, 0 ; 返回值
+		int 21h  [表示使用int 21h中断例程的4ch功能(程序返回功能)]
 --------常见错误--------
 1、通用寄存器
   1、计算
@@ -595,5 +615,9 @@
 	ddd: nop    [sax标号内容占用内存为：mov ax, offset ddd - offset sax]
 12、表达式
     mov ax, 6-4 [正确]
+13、offset和cld
+    mov cx, offset end0-offset site [如果是cld, rep movsb, 那么cx为正(注意offset end0、offset site的数值关系)]
+14、ascii码
+    db 0, '0'  ; 0是数值，'0'才是30H
 ********继续学习********
 P231 abc指令
