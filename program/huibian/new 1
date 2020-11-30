@@ -1,6 +1,0 @@
-mov cl, 3
-mov bx, ax 
-shl ax, cl
-shl bx, 1
-add ax, bx 
-
