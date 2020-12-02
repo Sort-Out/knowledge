@@ -103,7 +103,7 @@
 		 还有di, si(2字节寄存器，但不可分)]
    1、可用于间接寻址寄存器
       si、di、bx、bp
-2、常见指令
+2、常见赋值计算指令
    1、mov ax, 18 [相当于ax = 18]
    2、add ax, 7  [相当于ax = ax + 7]
    3、mov ax, bx [相当于ax = bx]
@@ -113,7 +113,10 @@
 	  可处理问题：
 	           1、使用位运算进行加减法
 			      and al, 11011111B [小写改大写]、or al, 00100000B [大写改小写] 
-   6、逻辑移位指令 
+   6、inc
+       mov bx, 1
+	   inc bx  [执行后,bx=2]
+   7、逻辑移位指令 
       1、shl [逻辑左移指令]
          eg:
 	        mov al, 01001000b
@@ -121,7 +124,64 @@
 		   [如果移动位数大于1，必须将移动位数放在cl中.eg: mov al, 01010001b. mov cl, 3. shl al, cl]
       2、shr [逻辑右移指令]
          同理shl
-      [当shl, cf取决于al左移时超出al左边的值.同理shr]  \
+      [当shl, cf取决于al左移时超出al左边的值.同理shr]  
+   8、dup 
+      dup与dd、dw、db等配合使用，用于重复定义开辟内存
+	  eg： db 200 dup(0) 相当于 db 0,0,0,0 [一个两百个0]
+   9、乘除法
+      6.1、div除法
+		   1、除数为16位
+			  则被除数为32位
+			  eg: 100001/100
+				  mov dx, 1
+				  mov ax, 86a1H
+				  mov bx, 100
+				  div bx 
+		   2、除数为8位
+			  则被除数为16位
+			  eg:1001/100
+				 mov ax, 03e9H
+				 mov bl, 100
+				 div bl
+		   商余规则：如果被除数为8位，则AL存储商、AH存储余数
+					如果被除数为16位，则AX存储商，DX存储余数
+      9.2、mul乘法
+	       [要么都为8位，要么都为16位]
+	       1、数为8位
+		      则另一数也为8位
+			  eg: 100*10
+			      mov al, 100
+				  mov bl, 10
+				  mul bl ; (ax)=1000
+		   2、数为16位
+		      则另一数也为16为
+			  eg: 100*10000
+			      mov ax, 100
+				  mov bx, 10000
+				  mul bx ; f4240h=1000000[(dx)=000fh, (ax)=4240h]
+		   乘法结果规则: 如果是8位乘法, 结果放在ax中.
+		                 如果是16位, 结果高位放在dx中, 结果低位放在ax中
+   10、 dd定义双字单元[即两个dw]
+	    例子: 将data段的dd作为被除数，第一个dw作为除数，结果的商放在第二个dw中
+	    assume cs:code
+	    data segment
+		     dd 100001
+	   	     dw 100
+		     dw 0
+		data ends
+		code segment 
+			 start: mov ax, data
+		            mov ds, ax 
+				 
+				    mov ax, ds:[0]
+				    mov dx, ds:[2]
+				    div word ptr ds:[4]
+				    mov ds:[6], ax
+				
+				    mov ax, 4c00h
+				    int 21h
+	    code ends
+	    end start 
 3、20位地址计算
    1、组成
 	  CPU使用"地址加法器"将2个16位地址[段地址:偏移地址]合成一个20位的物理地址
@@ -169,10 +229,7 @@
 	  mov al, [bx] [      将1000:0003对应内存地址单元(8位)的值赋给al]
    2、(bx)-(al)-((ds)*16+(bx))
       通常将(bx)-(al)-((ds)*16+(bx)) [(bx)：bx指向内存地址的内容值(16位), (al): al指向内存地址的内容值(8位),((ds)*16+(bx))... ]
-   3、inc
-      mov bx, 1
-	  inc bx  [执行后,bx=2]
-   4、偏移地址表示
+   3、偏移地址表示
       1、[bx+idata]
 		 [bx+idata]表示一个内存单元[地址为: ds:[(bx)+idata]]
 		  eg: mov bx, 0001H
@@ -186,134 +243,137 @@
        3、[bx+si+idata]
 	      [bx+si+idata]表示一个内存单元[地址为: ds:[(bx)+(si)+idata]]
 	      补充：[bx+si+idata]也可以写为idata[bx][si]或idata.[bx][si]
-   5、byte ptr/word ptr
+   4、byte ptr/word ptr
       mov word ptr ds:[0], 1  [指定cpu访问的ds:0为字单元]
 	  mov byte ptr ds:[0], 1  [指定cpu访问的ds:0为字节单元]
-   6、乘除法
-     6.1、div除法
-		  1、除数为16位
-			 则被除数为32位
-			 eg: 100001/100
-				 mov dx, 1
-				 mov ax, 86a1H
-				 mov bx, 100
-				 div bx 
-		  2、除数为8位
-			 则被除数为16位
-			 eg:1001/100
-				mov ax, 03e9H
-				mov bl, 100
-				div bl
-		  商余规则：如果被除数为8位，则AL存储商、AH存储余数
-					如果被除数为16位，则AX存储商，DX存储余数
-     6.2、mul乘法
-	      [要么都为8位，要么都为16位]
-	      1、数为8位
-		     则另一数也为8位
-			 eg: 100*10
-			     mov al, 100
-				 mov bl, 10
-				 mul bl ; (ax)=1000
-		  2、数为16位
-		     则另一数也为16为
-			 eg: 100*10000
-			     mov ax, 100
-				 mov bx, 10000
-				 mul bx ; f4240h=1000000[(dx)=000fh, (ax)=4240h]
-		  乘法结果规则: 如果是8位乘法, 结果放在ax中.
-		                如果是16位, 结果高位放在dx中, 结果低位放在ax中
-   7、dd[double dw]
-	  dd定义双字单元[即两个dw]
-	  例子: 将data段的dd作为被除数，第一个dw作为除数，结果的商放在第二个dw中
-	  assume cs:code
-	  data segment
-		   dd 100001
-	   	   dw 100
-		   dw 0
-	  data ends
-	  code segment 
-		   start: mov ax, data
-		     	  mov ds, ax 
-				 
-				  mov ax, ds:[0]
-				  mov dx, ds:[2]
-				  div word ptr ds:[4]
-				  mov ds:[6], ax
-				
-				  mov ax, 4c00h
-				  int 21h
-	  code ends
-	  end start 
-  8、dup 
-     dup与dd、dw、db等配合使用，用于重复定义开辟内存
-	 eg： db 200 dup(0) 相当于 db 0,0,0,0 [一个两百个0]
-  9、标号偏移地址计算-转移
-     对于Jmp, short, 转移依据标号相对地址[补码]
-     eg: 基于cs:ip运行规则
-	     [当cs:ip指向某一指令a时: 1、cpu读取a入指令缓冲器，2、ip+2或3(a..指令占2个字节或3个字节), 3、执行指令缓冲器的a指令]
-         [当cs:ip指向jmp s时(jmp对应偏移地址为0008H), 在运行jmp指令前, ip指向000a. 如果标号s对应偏移地址为000b, 那么jmp 偏移地址为1,
-		                                                                           如果标号s对应偏移地址为0001, 那么相对地址为-9(-9补码为F6)，执行-9跳转]		 
-	 1、标号偏移地址计算[offset]
-		定义：取得标号对应偏移地址[及标号对应ip值]
-		assume cs:codesg 
-		codesg segment
-			 start: mov ax, offset start [因为start是执行语句的开始，所以offset start 为0]
-			     s: mov ax, offset s     [因为s是执行完start: mov ax, offset start[3字节]后的语句,所以offset s为3 ]
-	 2、[短距离跳转,上127字节，下128字节]
-        start: mov ax, 0
-               mov bx, 0
-               jmp short s [jmp short s计算跳转偏移地址，ip值变，执行s:inc ax(不再执行add ax,1)]
-               add ax, 1
-             s:inc ax 
-		jmp short s为8位位移进行跳转，jmp near ptr s 为16位位移进行跳转
-        方式: 段不变，通过改变偏移地址实现跳转[段内跳转]
-	 3、[远距离跳转..]
-	    start: mov ax, 0
-		       mov bx, 0
-			   jmp far ptr s
-			   db 256 dup (0)
-			 s:add ax, 1
-			   inc ax
-		方式：段和偏移地址都有改变，cs段：标号s的段地址，ip:标号s的ip地址[段间跳转]
-	 4、转移地址在寄存器中
-	    jmp ax[指定16位reg] 
-	 5、转移地址在内存单元中
-	    1、段内跳转
-		   mov ax, 0123H
-		   mov ds:[0], ax
-		   jmp word ptr ds:[0] ; 执行完后ip=0123H
-        2、段间跳转		 
-           mov ax, 0123H
-		   mov ds:[0], ax
-		   mov word ptr ds:[2], 0
-		   jmp dword ptr ds:[0]  ; ds:[2]为转移段地址(即cs)、ds:[0]为转移偏移地址(即ip)
-	 6、有条件转移
-		jcxz 标号 ; 相当于 if ((cx)==0) jmp short 标号, 如果cx!=0, 那么什么也不做，直接往下执行
-     7、ret及retf
-	    ret: 修改ip的内容，相当于pop ip [段内转移] 
-		retf: 修改cs和ip的内容，相当于pop ip, pop cs[段间转移]
-	 8、call 标号
-	    call s [相当于push ip, jmp near ptr s[段内]]
-	    call far ptr s [相当于push cs, push ip, jmp far ptr s]
-     9、call 16位reg
-	    call bx [相当于push ip, jmp (bx)]
-	 10、call word ptr 内存地址
-	     转移地址在内存地址中
-	     call word ptr ds:[0] [相当于push ip, jmp word ptr ds:[0]] 
-	 11、call dword ptr 内存地址
-	     相当于push cs, push ip, jmp dword ptr 内存单元地址
-		 mov sp, 10h
-		 mov ax, 0123h
-		 mov ds:[0], ax
-		 mov word ptr ds:[2], 0
-		 call dword ptr ds:[0]  ; (cs)=0, (ip)=123H, (sp)=0CH
-     12、子程序设计[call与ret配合使用]
-	     call s
-		 ....
-		 mov ax, 4c00h
-		 int 21h
-	   s:add ax, ax
-	     ret           [当cs:ip指向call s并运行后，程序执行s标号内容，然后返回到call s下一个指令继续执行]
+   5、标号的写法
+      
+      1、普通
+	     s: mov ax,1 
+		    loop ...
+	  2、数据标号
+		 1、同一个段内使用
+		     [作用:表示一个段的内存地址]
+			 a db 1,2,3,4,5,6
+			 b dw 0
+			 ...
+			 mov ax, b ; 相当于mov ax, cs:[8]
+			 mov b, 2  ; 相当于mov word ptr cs:[8], 2
+			 inc b     ; 相当于inc word ptr cs:[8]
+			 
+			 mov al, a[si] ; 相当于mov al, cs:0[si], 即cs:[si+0]
+         2、不同段使用
+		    在code段使用data段的a,b.必须assume指明data段, 且在code段使用mov ax, data mov ds, data作出声明
+		    1、表示一个段的内存地址
+				assume cs:code, ds:data 
+				data segment
+					 a db 1,2,3,4,5,6,7,8
+					 b dw 0
+				data ends
+				code segment 
+					 start: 
+							mov ax, data
+							mov ds, ax
+							mov si, 0
+							mov cx, 8
+						   s:mov al, a[si]  
+            2、作为偏移地址
+               1、data segment
+                       a db 1,2,3,4,5,6,7,8
+                       b dw 0
+                       c dw a,b  ; 相当于c dw offset a, offset b 
+                  data ends 
+               2、data segment 
+                       a db 1,2,3,4,5,6,7,8
+                       b dw 0
+                       c dd a,b  ; 相当于c dw offset a, seg a, offset b, seg b [seg: 取得某一标号的段地址]		   
+
+           3、应用
+		      表映射: 代码清晰、方便功能扩充
+			        eg1: 使用0~15与'0~F'的映射显示字节的十六进制[如：11110001显示为F1H] 
+					    1、table db '0123456789' 
+					    2、分别用两个8位寄存器al,ah存取1111 0001 的高4位[ah=00001111]以及低4位[al=00000001]
+                        3、根据al,ah的值, 从table中取值
+                    eg2: 计算sin0、sin30、sin60...的值
+                        1、table dw ag0, ag30, ag60, ag90, ag120, ag150, ag180
+                           ag0   db '0'
+                           ag120 db '0.866', 0
+						   ...
+                           ag180 db '0'
+                          [根据偏移值从table中取值,eg: ag0(等同于offset ag0)]
+                        2、根据0, 30...通过转化为table对应的偏移值, 得到对应的值,eg:ag0[等同于offset ag0]
+                        3、根据table[ag0]转到ag0执行代码逻辑                                                                      						
+                    eg3: 根据输入数据，在表中找到对应子程序执行 
+					    1、编写program1, program2, program3子程序代码逻辑[注意使用ret从子程序返回]
+						2、table dw program1,program2,program3
+					    3、根据输入数据, 作为table标号偏移值,取得对应子程序,eg: 取得program1[相当于offset program1]	
+8、转移及子程序设计     4、根据table[program1]转到program1执行代码逻辑   
+   对于Jmp, short, 转移依据标号相对地址[补码]
+   eg: 基于cs:ip运行规则
+	   [当cs:ip指向某一指令a时: 1、cpu读取a入指令缓冲器，2、ip+2或3(a..指令占2个字节或3个字节), 3、执行指令缓冲器的a指令]
+	   [当cs:ip指向jmp s时(jmp对应偏移地址为0008H), 在运行jmp指令前, ip指向000a. 如果标号s对应偏移地址为000b, 那么jmp 偏移地址为1,
+																			   如果标号s对应偏移地址为0001, 那么相对地址为-9(-9补码为F6)，执行-9跳转]		 
+   1、标号偏移地址计算[offset]
+	  定义：取得标号对应偏移地址[及标号对应ip值]
+	  assume cs:codesg 
+	  codesg segment
+		     start: mov ax, offset start [因为start是执行语句的开始，所以offset start 为0]
+			        s: mov ax, offset s     [因为s是执行完start: mov ax, offset start[3字节]后的语句,所以offset s为3 ]
+   2、[短距离跳转,上127字节，下128字节]
+	  start: mov ax, 0
+		     mov bx, 0
+		     jmp short s [jmp short s计算跳转偏移地址，ip值变，执行s:inc ax(不再执行add ax,1)]
+		     add ax, 1
+		   s:inc ax 
+	  jmp short s为8位位移进行跳转，jmp near ptr s 为16位位移进行跳转
+   	  方式: 段不变，通过改变偏移地址实现跳转[段内跳转]
+   3、[远距离跳转..]
+	  start: mov ax, 0
+		     mov bx, 0
+		     jmp far ptr s
+		     db 256 dup (0)
+		   s:add ax, 1
+		     inc ax
+	  方式：段和偏移地址都有改变，cs段：标号s的段地址，ip:标号s的ip地址[段间跳转]
+   4、转移地址在寄存器中
+	  jmp ax[指定16位reg] 
+   5、转移地址在内存单元中
+	  1、段内跳转
+	     mov ax, 0123H
+	     mov ds:[0], ax
+	     jmp word ptr ds:[0] ; 执行完后ip=0123H
+	  2、段间跳转		 
+	     mov ax, 0123H
+	     mov ds:[0], ax
+	     mov word ptr ds:[2], 0
+	     jmp dword ptr ds:[0]  ; ds:[2]为转移段地址(即cs)、ds:[0]为转移偏移地址(即ip)
+   6、有条件转移
+	  jcxz 标号 ; 相当于 if ((cx)==0) jmp short 标号, 如果cx!=0, 那么什么也不做，直接往下执行
+   7、ret及retf
+	  ret: 修改ip的内容，相当于pop ip [段内转移] 
+	  retf: 修改cs和ip的内容，相当于pop ip, pop cs[段间转移]
+   8、call 标号
+	  call s [相当于push ip, jmp near ptr s[段内]]
+	  call far ptr s [相当于push cs, push ip, jmp far ptr s]
+   9、call 16位reg
+	  call bx [相当于push ip, jmp (bx)]
+   10、call word ptr 内存地址
+	   转移地址在内存地址中
+	   call word ptr ds:[0] [相当于push ip, jmp word ptr ds:[0]] 
+   11、call dword ptr 内存地址
+	   相当于push cs, push ip, jmp dword ptr 内存单元地址
+	   mov sp, 10h
+	   mov ax, 0123h
+	   mov ds:[0], ax
+	   mov word ptr ds:[2], 0
+	   call dword ptr ds:[0]  ; (cs)=0, (ip)=123H, (sp)=0CH
+   12、子程序设计[call与ret配合使用]
+	   call s
+	   ....
+	   mov ax, 4c00h
+	   int 21h
+     s:add ax, ax
+	   ret           [当cs:ip指向call s并运行后，程序执行s标号内容，然后返回到call s下一个指令继续执行]
 8、循环[loop]
    原理:cpu执行loop指令时[遇到loop s时]，先执行(cx)=(cx)-1, 然后判断cx的值[如果cx不为0则转移至标号处执行程序，如果cx为0则程序向下执行]
      mov ax, 2
@@ -473,6 +533,7 @@
 				push ax
 			    popf 
 12、串传送指令
+   作用：用于批量处理内存数据
    1、movsb
       作用：将ds:si 执行的内存单元的一个字节送入es:di中，然后根据寄存器df位的值，
 	        将si和di递增或递减[df=0: inc si, inc dii. df=1, dec si, dec di]
@@ -585,6 +646,7 @@
              in al, 71h		
    [秒：0单元、分：2单元、时：4单元、日：7单元、月：8单元、年：9单元（没有2019,只有19..同理2020、2018..）]   
 --------常见错误--------
+0、一定注意在asm下cs:[200]和cs:[200h]的区别
 1、通用寄存器
    1、计算
       ax低8位al计算，进位不会到达ah中   
@@ -593,6 +655,7 @@
 		 mov ds, 1000[错误] 8086不能直接将数据存到ds,cs等段寄存器, 但是可以在asm程序下mov ds:[0], 1000
 		 mov ds, ax [正确]
          add ds, ax[错误] 
+		 add ds:[0], ax [正确]
 		 add ax, ds[错误] 8086段寄存器不能参于加减运算	
 	   	 mov es:[0], ds:[0] [不建议][建议用其他寄存器中转ds:[0]的值，否则容易报寄存器不匹配的问题]
 		 push ds, pop es [正确]
@@ -676,5 +739,6 @@
     mov cx, offset end0-offset site [如果是cld, rep movsb, 那么cx为正(注意offset end0、offset site的数值关系)]
 14、ascii码
     db 0, '0'  ; 0是数值，'0'才是30H
+	
 ********继续学习********
 P284 外中断
