@@ -51,7 +51,7 @@ github使用
    git branch
  
 其他
-1、添加所有修改
+1、添加所有修改 
    git add .
 2、修改github仓库名，提交方法
    git add->git commit->git push
@@ -73,3 +73,6 @@ github使用
 	git add .
 	git commit
 	git push -u origin master [第一次]
+
+多人协作：
+https://segmentfault.com/a/1190000019714354
