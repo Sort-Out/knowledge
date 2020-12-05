@@ -55,3 +55,21 @@ github使用
    git add .
 2、修改github仓库名，提交方法
    git add->git commit->git push
+   
+换电脑后重新配置:
+1、配置ssh
+	ssh-keygen -t rsa -C "你的邮箱地址"
+	找到公匙文件夹，复制公匙内容到github settings. [后面git clone就可以使用ssh通道]
+2、自报家门
+	git config --global user.name "Your Name"
+	git config --global user.email "email@example.com"
+3、新建git仓库
+   git init ; 新建仓库  
+4、将新建仓库和远程仓库连接
+	git remote add origin "你的git地址"
+5、拉取内容
+    git pull origin master
+6、之后就可以修改了 
+	git add .
+	git commit
+	git push -u origin master [第一次]
