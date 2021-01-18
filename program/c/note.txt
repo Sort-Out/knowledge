@@ -16,12 +16,23 @@ vc6.0++使用
    鉴于程序自上而下编译：
    1、如果函数声明在main之上，可直接在main中调用函数
    2、如果函数声明在main之下，在main中调用需提前声明函数[eg: void shuchu();//声明  shuchu();//使用]
+--------预处理------
+1)文件包含 #include
+2)宏定义 #define
+3)条件编译 #if #endif
+   #ifndef __TEST_H__
+   #define __TEST_H__
+   #endif
 --------变量--------
 1、普通变量
    int a, A [C语言区分大小写]
 1、符号变量
-   1、预编译指令。不占用存储单元
-   #define PI 3.14
+   1、宏定义[不占用存储单元]
+	   #define PI 3.14
+	   #define LAG >  
+	   if(i LAG j)
+  [ 组n+1 ]]
+#endif
 2、常变量
    1、存在期间，值不能被修改。
    2、占用存储单元
