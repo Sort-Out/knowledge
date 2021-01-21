@@ -162,38 +162,6 @@ vc6.0++使用
 	void move(A, C){
 		printf("move %c to %c\n", A, C);
 	}
---------常用错误--------
-1、字符串
-   1、定义
-      单个字符使用单引号、字符串使用双引号
-   2、格式化输出
-      %c对应单个字符、%s对应字符串
-2、循环使用
-   for(int i ...)//会出现报错，应使用int i; for(i=1;....)
-3、字符指针变量赋值
-   1、赋值
-      char *a, str[10]; //1
-      a = str; //2
-      scanf("%s", a);//3
-     理解：需先让字符指针变量a指向一个特定地址，然后才能对其赋值
-           可以修改字符数组中的每个值，但无法修改字符指针变量的值[即char *b="ss"; b[1]='n'不可行] 
-4、结构体变量赋值
-   struct Student{long num; char name[20]; char sex; float score;}stu_1;
-   无法使用stu_1.name = "lilei" 赋值。可通过<string.h>中strcpy(stu_1.name, "lilei")赋值    
-5、NULL值
-   C只能写为NULL[大写]，小写即出错
-6、分号使用
-   #define LEN sizeof(struct Student) //不能加分号，否则会报异常missing ')' before ';'
-   struct Student{char name[20]; int age; struct Student *next;}; //要加分号
-7、SCANF使用
-   1、scanf("%d,%d",&a,&b);因为两个%d之间有一个逗号，所以在输入时两个整数之间只能用逗号分隔，如果用其它符号分隔就会出错（比如说此时用空格、回车分隔就会出错）
-   如果是scanf("%s, %d"...)//应改成scanf("%d,%s"...)
-   2、对于char b[10]; scanf("%s", b); 或者scanf("%c", &b[0]); 对于int a[10]; 只能写为scanf("%d", &a[0]);
---------代码优化--------
-1、先赋值后判断
-   while((*to++=*from++)!='\0'); //先赋值，后自增
-2、'\0'判断
-   while((*to++=*from++)!='\0') 可优化为while((*to++=*from++);
 --------函数使用--------  
 1、空函数
   作用：提前定义，后续再补上代码
@@ -444,3 +412,67 @@ vc6.0++使用
 			if(fp != NULL){fputs("you good", fp); fputc('\n', fp); fputs("you fucking good", fp);
 				fclose(fp);
 			}else{ printf("not ok");exit(0); }
+--------使用经验--------
+1、数组
+   A、计算数组长度
+      1、通用[字符型/非字符]
+	      方法：使用sizeof计算
+		  int a[10]; 
+		  长度：sizeof(a)/sizeof(a[0])
+		  [如果将a作为参数传入int m(*p), 再测算sizeof(p)/sizeof(p[0](结果就不是a数组长度的值)]
+	  2、字符型数组
+	      方法: 通过判断值是否为'\0'
+	      int length(char *s)  
+		  {  
+		     int i=0;
+			 while(*s!='\0')
+			 {  
+				i++;   
+				s++;  
+			 }  
+			 return i;  
+		  }
+--------常用错误--------
+1、字符串
+   1、定义
+      单个字符使用单引号、字符串使用双引号
+   2、格式化输出
+      %c对应单个字符、%s对应字符串
+2、循环使用
+   for(int i ...)//会出现报错，应使用int i; for(i=1;....)
+3、字符指针变量赋值
+   1、赋值
+      char *a, str[10]; //1
+      a = str; //2
+      scanf("%s", a);//3
+     理解：需先让字符指针变量a指向一个特定地址，然后才能对其赋值
+           可以修改字符数组中的每个值，但无法修改字符指针变量的值[即char *b="ss"; b[1]='n'不可行] 
+4、结构体
+   1、定义
+       typedef struct LNode
+		{
+			int money;
+			char name[20];
+			struct lnode* next; //只能struct lnode* next, 不能struct LinkList next;
+		}lnode, *LinkList;  
+
+   2、变量赋值
+      A、
+	    struct Student{long num; char name[20]; char sex; float score;}stu_1;
+       无法使用stu_1.name = "lilei" 赋值。可通过<string.h>中strcpy(stu_1.name, "lilei")赋值    
+      B、
+	    scanf("%d, %s, %s", &(student[i].age), student[i].name, student[i].gender); //结构体赋值注意&
+5、NULL值
+   C只能写为NULL[大写]，小写即出错
+6、分号使用
+   #define LEN sizeof(struct Student) //不能加分号，否则会报异常missing ')' before ';'
+   struct Student{char name[20]; int age; struct Student *next;}; //要加分号
+7、SCANF使用
+   1、scanf("%d,%d",&a,&b);因为两个%d之间有一个逗号，所以在输入时两个整数之间只能用逗号分隔，如果用其它符号分隔就会出错（比如说此时用空格、回车分隔就会出错）
+   如果是scanf("%s, %d"...)//应改成scanf("%d,%s"...)
+   2、对于char b[10]; scanf("%s", b); 或者scanf("%c", &b[0]); 对于int a[10]; 只能写为scanf("%d", &a[0]);
+--------代码优化--------
+1、先赋值后判断
+   while((*to++=*from++)!='\0'); //先赋值，后自增
+2、'\0'判断
+   while((*to++=*from++)!='\0') 可优化为while((*to++=*from++);
