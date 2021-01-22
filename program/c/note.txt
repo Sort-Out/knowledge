@@ -312,7 +312,17 @@ vc6.0++使用
 	  2、指针变量作为形参
 	     int max(int x, int y){...}; int x=10, y=100; int choose(int x, int y, int(*p)(int, int)); choose(x, y, max);
 	  3、返回指针类型的函数
-         int* p(int x, int y);	
+         int* p(int x, int y);
+      4、指针函数
+         理解：指向函数的指针
+		 int  evenumber(int x);
+         int main(){
+		    int n;
+			...
+			int (*p)(int); //1
+			p = evenumber; //2 [1，2两句可直接写为int (*p)(int) = evenumber]
+			n = (*p)(3);
+		 }
    6、指向指针的指针
 	  char **p //可理解为char* (*p)， p是一个指向char *指针的指针变量[char *p p是一个指针变量，指向char]
 	  1、处理字符数组
@@ -454,9 +464,11 @@ vc6.0++使用
 			int money;
 			char name[20];
 			struct lnode* next; //只能struct lnode* next, 不能struct LinkList next;
-		}lnode, *LinkList;  
-
-   2、变量赋值
+		}LNode, *LinkList;  
+   2、创建
+       LinkList L, q, p;
+	   L = (LinkList)malloc(sizeof(LNode)); //全部使用LinkList, 不用LNode
+   3、变量赋值
       A、
 	    struct Student{long num; char name[20]; char sex; float score;}stu_1;
        无法使用stu_1.name = "lilei" 赋值。可通过<string.h>中strcpy(stu_1.name, "lilei")赋值    
@@ -476,3 +488,12 @@ vc6.0++使用
    while((*to++=*from++)!='\0'); //先赋值，后自增
 2、'\0'判断
    while((*to++=*from++)!='\0') 可优化为while((*to++=*from++);
+--------常用函数--------
+1、字符串相关
+   比较字符串                    strcmp(str1, str2) // char str1[50], str2[50]; [string.h]
+   复制                          strcpy(a, b) 		//char a[50], b[50]; 		[string.h]
+   拼接                          strcat(str1, str2);//char str1[5],str2[5];...  [string.h]
+   赋值  						 gets(str) 			//char str[50]; gets(str);  [stdio.h]
+   赋值                          getchar()  		// char c; c=getchar();     [stdio.h]
+   输出			                 putchar(c) 		// cahr c='a'; putchar(c);  [stdio.h]
+   输出                          puts(c)            // char c[20]="ss"; puts(c) [stdio.h]
