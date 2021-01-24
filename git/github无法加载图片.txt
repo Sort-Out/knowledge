@@ -1,0 +1,13 @@
+无法加载图片：
+1、f12查询
+     显示"https://avatars.githubusercontent.com/...."无法加载
+2、修改域名测试
+     将地址中的 avatars3 依次改成avatars0, avatars1, avatars2, avatars4, avatars5，
+     直到有一个头像能正常显示为止（注意：如果都不能显示此方法就不适用，需找另外的方法）
+3、找出可以显示的域名对应ip
+     如果 avatars修改为avatars1可用，则打开cmd端，ping avatars1.githubusercontent.com 
+     会得到一个ip地址（如：199.232.96.133）
+4、修改host文件
+     199.232.96.133  avatars.githubusercontent.com  
+5、刷新dns
+     cmd下执行ipconfig /flushdns
