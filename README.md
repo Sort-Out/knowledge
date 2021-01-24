@@ -1,1 +1,1 @@
-use for all kinds of knowledge making up [devv]
+use for all kinds of knowledges making up [done]
