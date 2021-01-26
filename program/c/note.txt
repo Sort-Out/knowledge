@@ -179,7 +179,7 @@ vc6.0++使用
   2、外部函数
      作用：其他文件可以调用
 	 规定：在定义函数时，省略extern，则默认为外部函数
-	 extern int fun(int a, int b)
+	 extern int fun(int a, int b
 --------变量相关--------
 1、程序块
    作用域：变量C作为程序块定义变量，只在程序块中有效 
@@ -425,12 +425,12 @@ vc6.0++使用
 --------使用经验--------
 1、数组
    A、计算数组长度
-      1、通用[字符型/非字符]
+        1、通用[字符型/非字符]
 	      方法：使用sizeof计算
 		  int a[10]; 
-		  长度：sizeof(a)/sizeof(a[0])
+		  长度：sizeof(a)/sizeof(a[0]) []
 		  [如果将a作为参数传入int m(*p), 再测算sizeof(p)/sizeof(p[0](结果就不是a数组长度的值)]
-	  2、字符型数组
+        2、字符型数组
 	      方法: 通过判断值是否为'\0'
 	      int length(char *s)  
 		  {  
@@ -442,6 +442,7 @@ vc6.0++使用
 			 }  
 			 return i;  
 		  }
+         补充：对于a[10], sizeof(a)/sizeof(a[0]) 结果永远只能为10
 --------常用错误--------
 1、字符串
    1、定义
@@ -497,3 +498,7 @@ vc6.0++使用
    赋值                          getchar()  		// char c; c=getchar();     [stdio.h]
    输出			                 putchar(c) 		// cahr c='a'; putchar(c);  [stdio.h]
    输出                          puts(c)            // char c[20]="ss"; puts(c) [stdio.h]
+   长度                          strlen(c)    //char c[20]; strlen(c);
+2、系统函数
+   退出程序             exit(0)    //  通常0表示异常，其他数值表示异常, 自行设定[stdlib.h]
+   按任意键结束      system("pause")  // [stdlib.h]
