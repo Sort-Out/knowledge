@@ -2,7 +2,7 @@
 1、撤销修改/删除的工作区内容
    git checkout <file>
 2、撤销add到暂存区
-   git reset head file
+   git reset head[撤销所有add]、git reset HEAD XXX/XXX/XXX.java[撤销指定java文件]
 3、撤销commit到分支
    git reset --hard head^
 4、撤销删除文件/文件夹
