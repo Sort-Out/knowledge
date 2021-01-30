@@ -20,7 +20,8 @@
 
     "C_Cpp.clang_format_sortIncludes": true,
     "files.associations": {
-        "stdio.h": "c"
+        "stdio.h": "c",
+        "T.C": "cpp"
     }, // 格式化时调整include的顺序（按字母排序）
     "terminal.integrated.shell.windows": "powershell.exe",
 }
