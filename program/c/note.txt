@@ -363,6 +363,9 @@ vc6.0++使用
 1、malloc函数
    void *malloc(unsigned int size) //在内存的动态存储区中分配一个长度为size的连续空间
    pt =(int *)malloc(100); //开辟100字节的临时分配域。函数值为其第一个字节的地址。[如果失败, 返回null]
+   //创建数组[连续地址]
+     1、整型数组   int  *  array ;  array = (int * ) malloc(n * sizeof(int)); free(array);
+     2、连续链表   struct data *line1 = NULL; line1= (struct data*)malloc(sizeof(struct data)*(r_n+1)); free(line1);
 2、calloc函数
    void *calloc(unsigned n, unsigned size) //在内存的动态存储区中分配n个长度为size的连续空间[如果失败, 返回null]
    p = (int *)calloc(50, 4); //开辟50*4个字节的临时分配域，把起始地址赋给指针变量p
@@ -397,7 +400,13 @@ vc6.0++使用
 	   1、fgetc(fp) //读入一个字符[成功即返回所读字符，失败返回-1]
 	   2、fputc(ch, fp) //将字符ch写到fp指向的文件[成功即返回所读字符，失败返回-1]
 	   3、feof(fp) //判断fp是否移到文件末尾[失败返回0]
-	   4、fgets(str, n, fp) //读取一个长度为n-1的字符串，存放在字符数组str中[失败返回NULL] （一行）
+                                                 //计算文件行数：while (!feof(fp)){c = fgetc(fp); if (c == '\n')  r_n++;}
+	   4、fgets(str, n, fp) //读取一个长度为n-1的字符串，存放在字符数组str中
+                                                 //1、如果输入的字符长度小于n-1, 那么最后敲回车结束fgets的回车字符会被str获取
+                                                 //2、如果输入的字符长度大于n-1, 那就在输入字符中截取n-1个字符给str
+                                                 //3、fgets可以在文件流fp中读取，也可以在stdin中读取
+                                                         //3.1、无论是文件还是输入流，fgets遇到换行符会停止读取
+                                                 //4、相较于gets()，fgets更安全，且对于第1条，fgets会保存回车字符，gets会直接扔掉回车字符
 	   5、fputs(str, fp)  //把str所指向的字符串写到fp指向的文件中[成功即返回0，失败返回非0值]
 	   6、fprinf(fp, "%s, %f", i,j) //将字符串型变量i, 浮点型变量j输入到文件fp中
 	   7、fread(f, 4, 10, fp) //从fp指向的文件中，读取10个4字节[按数据块长度处理，不涉及字符转换]
@@ -494,11 +503,14 @@ vc6.0++使用
    比较字符串                    strcmp(str1, str2) // char str1[50], str2[50]; [string.h]
    复制                          strcpy(a, b) 		//char a[50], b[50]; 		[string.h]
    拼接                          strcat(str1, str2);//char str1[5],str2[5];...  [string.h]
+   分割                          strtok()   //类似其他语言的split函数  [string.h]
    赋值  						 gets(str) 			//char str[50]; gets(str);  [stdio.h]
    赋值                          getchar()  		// char c; c=getchar();     [stdio.h]
    输出			                 putchar(c) 		// cahr c='a'; putchar(c);  [stdio.h]
    输出                          puts(c)            // char c[20]="ss"; puts(c) [stdio.h]
    长度                          strlen(c)    //char c[20]; strlen(c);
+   格式化输出               sscanf  //sscanf(buf, "%s X%f Y%f E%f", &line1[i].G, &line1[i].Xs, &line1[i].Ys,&line1[i].E);//分别跳过XYE读取数据  [char *buf = “sss”...]
+
 2、系统函数
    退出程序             exit(0)    //  通常0表示异常，其他数值表示异常, 自行设定[stdlib.h]
    按任意键结束      system("pause")  // [stdlib.h]
